@@ -1,0 +1,18 @@
+{
+  "name": "proving_ground",
+  "version": "1.0.0",
+  "description": "",
+  "private": "true",
+  "scripts": {
+    "install": "npm-recursive-install --skip-root",
+    "dev": "concurrently \"npm --prefix ./app_package run dev\" \"npm --prefix ./test_package run dev\"",
+    "build": "npm --prefix ./app_package run build && npm --prefix ./test_package run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^6.2.1",
+    "recursive-install": "^1.4.0"
+  }
+}
