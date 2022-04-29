@@ -26,7 +26,7 @@ export class Diorama {
         scene.activeCameras = [this._camera, this._cameraDummy];
         var _this = this;
 
-        SceneLoader.LoadAssetContainer(assets.assetsHostUrl+"/assets/gltf/", "valkyrieShowroom_mesh.glb", scene, function (container: AssetContainer) {
+        SceneLoader.LoadAssetContainer(assets.assetsHostUrl+"/assets/gltf/", "valkyrie_mesh.glb", scene, function (container: AssetContainer) {
                 container.meshes[0].scaling.scaleInPlace(100);
                 (container.meshes[0]as Mesh).computeWorldMatrix();
                 container.addAllToScene();
