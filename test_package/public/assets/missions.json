@@ -37,7 +37,7 @@
         "enemyBoundaryRadius": 1600,
         "humanBoundaryRadius": 3200}
     },
-{"name":"Beginner", "description":"Fly solo in this first mission\nto discover the basics of the game.",
+{"name":"Solo", "description":"Fly solo in this first mission\nto discover the basics of the game.",
     "gameDefinition":{
         "seed" : 20220303,
         "asteroidCount" : 20,
@@ -56,7 +56,7 @@
         "enemyBoundaryRadius": 400,
         "humanBoundaryRadius": 800}
     },
-{"name":"Intermediate", "description":"You now have a crew,\nbut also many more enemies.",
+{"name":"Squad", "description":"You now have wingmates,\nbut also more enemies.",
     "gameDefinition":{
         "seed" : 20220304,
         "asteroidCount" : 30,
@@ -75,21 +75,21 @@
         "enemyBoundaryRadius": 400,
         "humanBoundaryRadius": 800}
     },
-{"name":"Expert", "description":"Full battle with\nmuch tougher enemies.",
+{"name":"Battle", "description":"Are you ready for a full\n space battle?",
     "gameDefinition":{
         "seed" : 20220305,
         "asteroidCount" : 200,
         "asteroidRadius" : 1000,
         "humanAllies": 1,
         "humanEnemies": 0,
-        "aiAllies": 5,
+        "aiAllies": 3,
         "aiEnemies": 20,
         "humanAlliesLife": 30,
         "humanEnemiesLife": 30,
         "aiAlliesLife": 20,
         "aiEnemiesLife": 30,
-        "shotDamage": 3,
-        "missileDamage": 20,
+        "shotDamage": 1,
+        "missileDamage": 30,
         "delayedEnd": 1,
         "enemyBoundaryRadius": 400,
         "humanBoundaryRadius": 800}
