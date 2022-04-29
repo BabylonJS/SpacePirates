@@ -76,6 +76,23 @@ export class Parameters {
 
     public static starfieldHeavyShader: boolean;
 
+    public static guiFont = {
+        family: "magistral, sans-serif",
+        book: "300",
+        bold: "700",
+        style: "normal"
+    }
+
+    public static setFont(element: any, isBold: boolean) {
+        element.fontFamily = Parameters.guiFont.family;
+        if (isBold) {
+            element.fontWeight = Parameters.guiFont.bold;
+        } else {
+            element.fontWeight = Parameters.guiFont.book;
+        }
+        element.fontStyle = Parameters.guiFont.style;
+    }
+
     // paste exported parameters inside this function
     public static initialize() {
         this.maxSpeed = 2;

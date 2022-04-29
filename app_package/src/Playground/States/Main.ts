@@ -1,5 +1,6 @@
 import { Nullable } from "@babylonjs/core";
-import { Button, StackPanel } from "@babylonjs/gui";
+import { Control, Button, Grid, StackPanel } from "@babylonjs/gui";
+import { fireProceduralTexturePixelShader } from "@babylonjs/procedural-textures/fire/fireProceduralTexture.fragment";
 import { GameDefinition } from "../Game";
 import { Parameters } from "../Parameters";
 import { BattleSelect } from "./BattleSelect";
@@ -16,11 +17,12 @@ export class Main extends State {
     }
 
     private _addButton(label: string, panel: StackPanel): Button {
-        var button = Button.CreateSimpleButton("but", label);
+        var button = Button.CreateSimpleButton("but", label.toUpperCase());
         button.width = "300px";
         button.height = "40px";
         button.color = "white";
         button.background = "grey";
+        Parameters.setFont(button, true);
         panel.addControl(button);
         return button;
     }
@@ -35,6 +37,12 @@ export class Main extends State {
         Main.diorama?.setEnable(this._adt);
         
         var panel = new StackPanel();
+        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        let grid = new Grid();
+        grid.addRowDefinition(0.6, false);
+        grid.addRowDefinition(0.4, false);
+        grid.addColumnDefinition(1.0, false)
+        grid.addControl(panel, 1, 0);
         
         this._addButton("Single Player Battle", panel).onPointerDownObservable.add(function(info) {
             const gameDefinition = new GameDefinition();
@@ -74,7 +82,6 @@ export class Main extends State {
         this._addButton("Credits", panel).onPointerDownObservable.add(function(info) {
             State.setCurrent(States.credits);
         });
-
-        this._adt.addControl(panel);
+        this._adt.addControl(grid);
     }
 }

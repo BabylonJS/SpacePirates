@@ -2,6 +2,7 @@ import { AdvancedDynamicTexture, StackPanel, TextBlock } from "@babylonjs/gui";
 import { Nullable, Scene } from "@babylonjs/core";
 import { GameSession } from "./GameSession";
 import { GameState } from "./GameState";
+import { Parameters } from "../Parameters";
 
 export class State {
     static currentState: Nullable<State> = null;
@@ -34,10 +35,11 @@ export class State {
     // helpers
     protected _addText(text: string, panel: StackPanel): void {
         var textBlock = new TextBlock();
-        textBlock.text = text;
+        textBlock.text = text.toUpperCase();
         textBlock.width = 0.6;
         textBlock.height = "20px";
         textBlock.color = "white";
+        Parameters.setFont(textBlock, true);
         panel.addControl(textBlock);
     }
 }
