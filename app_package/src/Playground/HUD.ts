@@ -206,6 +206,8 @@ export class HUD {
         this._shipManager = shipManager;
         this._adt = AdvancedDynamicTexture.CreateFullscreenUI("HUD", true, scene);
         this._adt.layer!.layerMask = 0x10000000;
+        this._resizeListener = this._resizeListener.bind(this);
+        window.addEventListener("resize", this._resizeListener);
 
         this._hudPanels = new Array<HUDPanel>();
         for (let i = 0; i < players.length; i++) {
@@ -250,6 +252,13 @@ export class HUD {
 
         if (InputManager.isTouch) {
             this._touchInput = new TouchInput(this._adt, this._shipManager);
+        }
+    }
+
+    private _resizeListener() {
+        if (this._adt && this._adt.getScene()) {
+            console.log(this._adt.getScene()!.getEngine().getRenderWidth())
+            this._adt.scaleTo(this._adt.getScene()!.getEngine().getRenderWidth(), this._adt.getScene()!.getEngine().getRenderHeight());
         }
     }
 
@@ -356,5 +365,6 @@ export class HUD {
 
     dispose() {
         this._adt.dispose();
+        window.removeEventListener("resize", this._resizeListener);
     }
 }
