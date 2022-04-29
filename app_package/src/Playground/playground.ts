@@ -1,4 +1,4 @@
-import { Scene, Vector3, Engine, FreeCamera, DirectionalLight, Color3, GlowLayer, ImageProcessingConfiguration } from "@babylonjs/core";
+import { Scene, Vector3, Engine, FreeCamera, DirectionalLight, Color3, GlowLayer, ImageProcessingConfiguration, Color4 } from "@babylonjs/core";
 import { Assets } from "./Assets";
 import { States } from "./States/States";
 import { State } from "./States/State";
@@ -14,7 +14,8 @@ class Playground {
         // This creates a basic Babylon Scene object (non-mesh)
         var scene = new Scene(engine);
 
-        scene.autoClear = false;
+        //scene.autoClear = false;
+        scene.clearColor = new Color4(0,0,0,1);
         scene.autoClearDepthAndStencil = false;
         scene.skipPointerMovePicking = true;
         scene.pointerUpPredicate = ()=> false;

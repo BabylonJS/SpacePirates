@@ -100,7 +100,7 @@ export class Assets {
                 _this.starfield = task.loadedMeshes[1];
                 if (_this.starfield) {
                     _this.starfield.scaling = new Vector3(4500,4500,4500);
-                    //_this.starfield.visibility = 0;
+                    _this.starfield.visibility = 0;
                 }
             };
             var explosionMeshTask = assetsManager.addMeshTask("explosionMeshTask", "", assetsHostUrl + "/assets/gltf/", "explosionSpheres_mesh.glb");

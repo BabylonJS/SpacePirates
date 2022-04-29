@@ -8,7 +8,7 @@ export class Diorama {
     private _scene: Scene;
     private _camera: TargetCamera;
     private _cameraDummy: TargetCamera;
-    private _localTime: number = 10000;
+    private _localTime: number = -10000;
     private _start: Vector3 = new Vector3();
     private _end: Vector3 = new Vector3();
     private _image: Nullable<Rectangle> = null;
@@ -26,21 +26,22 @@ export class Diorama {
         scene.activeCameras = [this._camera, this._cameraDummy];
         var _this = this;
 
-        SceneLoader.LoadAssetContainer(assets.assetsHostUrl+"/assets/gltf/", "valkyrie_mesh.glb", scene, function (container: AssetContainer) {
-                container.meshes[0].scaling.scaleInPlace(100);
-                (container.meshes[0]as Mesh).computeWorldMatrix();
-                container.addAllToScene();
-                _this._ship = container.meshes[1];
-                _this._ship.setEnabled(_this._enabled);
-
-                _this._ship.getChildTransformNodes(false).forEach((m: TransformNode) => {
-                    if (m.name == "valkyrieShield_mesh") {
+        if (assets.valkyrie)
+        {
+            this._ship = assets.valkyrie.clone("valkyrieDiorana", null);
+            if (this._ship) {
+                this._ship.scaling.scaleInPlace(100);
+                this._ship.getChildTransformNodes(false).forEach((m: TransformNode) => {
+                    if (m.name.endsWith("valkyrieShield_mesh")) {
                         m.setEnabled(false);
                     }
                 });
-                
-                Ship.HandleThrustersShield(assets, null, _this._ship, true, 0, glowLayer);
-            });
+                Ship.HandleThrustersShield(assets, null, this._ship, true, 0, glowLayer);
+            }
+        }
+        if (assets.starfield) {
+            assets.starfield.visibility = 1;
+        }
         this._scene.onBeforeRenderObservable.add(()=>{
             if (!this._enabled) {
                 return;
@@ -68,8 +69,7 @@ export class Diorama {
                 if (t < 0.25) {
                     this._image.alpha = 1 - t * 4;
                 }
-    
-                if (t > 0.75) {
+                else if (t > 0.75) {
                     this._image.alpha =  (t - 0.75) *4;
                 }
             }
@@ -86,6 +86,7 @@ export class Diorama {
         this._image.height = 1;
         this._image.width = 1;
         this._image.isVisible = true;
+        this._image.alpha = 1;
         adt.addControl(this._image);
         console.log("gui created");
     }
