@@ -19,6 +19,7 @@ export class Options extends State {
         label.height = "20px";
         label.color = "white";
         label.topInPixels = 20;
+        Parameters.setFont(label, false);
         panel.addControl(label);
         return label;
     }
@@ -53,14 +54,16 @@ export class Options extends State {
             return;
         }
         InputManager.disablePointerLock();
-        
+
+        let guiControlsBold: any = [];       
         var panel = new StackPanel();
 
         var textBlock = new TextBlock();
-        textBlock.text = "Options";
+        textBlock.text = "Options".toUpperCase();
         textBlock.width = 0.6;
         textBlock.height = "100px";
         textBlock.color = "white";
+        guiControlsBold.push(textBlock);
         panel.addControl(textBlock);
 
         const volume = this.makeSlider(panel,"volume", () => `Volume: ${Math.floor(Settings.volume * 100)}%`, (value) => Settings.volume = value, Settings.volume);
@@ -99,7 +102,12 @@ export class Options extends State {
         button.height = "40px";
         button.color = "white";
         button.background = "grey";
+        guiControlsBold.push(button);
         panel.addControl(button);
+
+        for (let index in guiControlsBold) {
+            Parameters.setFont(guiControlsBold[index], true);
+        }
 
         var _this = this;
         button.onPointerDownObservable.add(function(info) {

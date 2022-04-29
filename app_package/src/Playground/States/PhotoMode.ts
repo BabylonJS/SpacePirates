@@ -9,6 +9,7 @@ import { Recorder } from "../Recorder/Recorder";
 import { PlanetBaker } from "../FX/PlanetBaker";
 import { Assets } from "../Assets";
 import { World } from "../World";
+import { Parameters } from "../Parameters";
 
 export class PhotoMode extends State {
     public ship: Nullable<Ship> = null;
@@ -224,6 +225,7 @@ export class PhotoMode extends State {
         //textBlock.width = 0.2;
         textBlock.height = "40px";
         textBlock.color = "white";
+        Parameters.setFont(textBlock, false);
         panel.addControl(textBlock);
         return textBlock;
     }
@@ -240,15 +242,17 @@ export class PhotoMode extends State {
         header.height = "30px";
         header.color = "white";
         header.background = "grey";
+        Parameters.setFont(header, false);
         panel.addControl(header);
         return check;
     }
 
     private _addButton(text: string, panel: StackPanel): Button {
-        var button = Button.CreateSimpleButton("button", text);
+        var button = Button.CreateSimpleButton("button", text.toUpperCase());
         button.height = "40px";
         button.color = "white";
         button.background = "grey";
+        Parameters.setFont(button, true);
         panel.addControl(button);
         return button;
     }
@@ -265,6 +269,7 @@ export class PhotoMode extends State {
         header.height = "30px";
         header.color = "white";
         header.background = "grey";
+        Parameters.setFont(header, false); 
         panel.addControl(header);
         return button;
     }

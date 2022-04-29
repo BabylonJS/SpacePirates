@@ -5,6 +5,7 @@ import { GameState } from "./GameState";
 import { Nullable } from "@babylonjs/core";
 import { Ship, Statistics } from "../Ship";
 import { InputManager } from "../Inputs/Input";
+import { Parameters } from "../Parameters";
 
 export class Dead extends State {
     public ship: Nullable<Ship> = null;
@@ -35,19 +36,26 @@ export class Dead extends State {
             this._addText("Enemies Asteroid Crash: " + Statistics.enemiesCrash, panel);
         }
 
-        var button = Button.CreateSimpleButton("but", "Try again");
+        let buttons = [];
+        var button = Button.CreateSimpleButton("but", "Try again".toUpperCase());
         button.width = 0.2;
         button.height = "40px";
         button.color = "white";
         button.background = "grey";
+        buttons.push(button);
         panel.addControl(button);
 
-        var button2 = Button.CreateSimpleButton("but", "Main menu");
+        var button2 = Button.CreateSimpleButton("but", "Main menu".toUpperCase());
         button2.width = 0.2;
         button2.height = "40px";
         button2.color = "white";
         button2.background = "grey";
+        buttons.push(button2);
         panel.addControl(button2);
+
+        for (let index in buttons) {
+            Parameters.setFont(buttons[index], true);
+        }
 
         button.onPointerDownObservable.add(function(info) {
             GameState.gameSession?.stop();
