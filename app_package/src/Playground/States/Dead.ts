@@ -1,11 +1,11 @@
-import { Button, StackPanel, TextBlock } from "@babylonjs/gui";
+import { Control, Image, Grid, Button, StackPanel, TextBlock } from "@babylonjs/gui";
 import { State } from "./State";
 import { States } from "./States";
 import { GameState } from "./GameState";
 import { Nullable } from "@babylonjs/core";
 import { Ship, Statistics } from "../Ship";
 import { InputManager } from "../Inputs/Input";
-import { Parameters } from "../Parameters";
+import { GuiFramework } from "../GuiFramework";
 
 export class Dead extends State {
     public ship: Nullable<Ship> = null;
@@ -20,53 +20,41 @@ export class Dead extends State {
         }
 
         InputManager.disablePointerLock();
-        var panel = new StackPanel();
 
-        this._addText("Wasted !!!", panel);
+        GuiFramework.createBottomBar(this._adt);
+        let stats = new StackPanel();
+        var panel = new StackPanel();
+        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        let grid = new Grid();
+        GuiFramework.formatButtonGrid(grid);
+        grid.addControl(panel, 0, 0);
+        GuiFramework.createTextPanel(grid);
+        grid.addControl(stats, 0, 1);
+
+        this._addText("Wasted !!!", stats);
         if (this.ship && this.ship.statistics) {
             const s = this.ship.statistics;
-            this._addText("Damage dealt :" + s.damageDealt, panel);
-            this._addText("Damage taken :" + s.damageTaken, panel);
-            this._addText("Ships destroyed :" + s.shipsDestroyed, panel);
-            this._addText("Time of battle :" + Math.round(s.timeOfBattle/1000)+" seconds", panel);
-            this._addText("Shots fired :" + s.shotFired, panel);
-            this._addText("Shots hitting :" + s.shotHitting, panel);
-            this._addText("Missiles fired :" + s.missilesFired, panel);
-            this._addText("Allies Asteroid Crash: " + Statistics.alliesCrash, panel);
-            this._addText("Enemies Asteroid Crash: " + Statistics.enemiesCrash, panel);
+            this._addText("Damage dealt :" + s.damageDealt, stats);
+            this._addText("Damage taken :" + s.damageTaken, stats);
+            this._addText("Ships destroyed :" + s.shipsDestroyed, stats);
+            this._addText("Time of battle :" + Math.round(s.timeOfBattle/1000)+" seconds", stats);
+            this._addText("Shots fired :" + s.shotFired, stats);
+            this._addText("Shots hitting :" + s.shotHitting, stats);
+            this._addText("Missiles fired :" + s.missilesFired, stats);
+            this._addText("Allies Asteroid Crash: " + Statistics.alliesCrash, stats);
+            this._addText("Enemies Asteroid Crash: " + Statistics.enemiesCrash, stats);
         }
 
-        let buttons = [];
-        var button = Button.CreateSimpleButton("but", "Try again".toUpperCase());
-        button.width = 0.2;
-        button.height = "40px";
-        button.color = "white";
-        button.background = "grey";
-        buttons.push(button);
-        panel.addControl(button);
-
-        var button2 = Button.CreateSimpleButton("but", "Main menu".toUpperCase());
-        button2.width = 0.2;
-        button2.height = "40px";
-        button2.color = "white";
-        button2.background = "grey";
-        buttons.push(button2);
-        panel.addControl(button2);
-
-        for (let index in buttons) {
-            Parameters.setFont(buttons[index], true);
-        }
-
-        button.onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Try again", panel).onPointerDownObservable.add(function(info) {
             GameState.gameSession?.stop();
             State.setCurrent(States.gameState);
         });
 
-        button2.onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Main menu", panel).onPointerDownObservable.add(function(info) {
             GameState.gameSession?.stop();
             State.setCurrent(States.main);
         });
 
-        this._adt.addControl(panel);
+        this._adt.addControl(grid);
     }
 }

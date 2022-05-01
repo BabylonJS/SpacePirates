@@ -4,6 +4,7 @@ import { InputManager } from "../Inputs/Input";
 import { State } from "./State";
 import { Parameters } from '../Parameters';
 import { Settings } from "../../Settings";
+import { GuiFramework } from "../GuiFramework";
 
 export class Options extends State {
 
@@ -19,7 +20,7 @@ export class Options extends State {
         label.height = "20px";
         label.color = "white";
         label.topInPixels = 20;
-        Parameters.setFont(label, false);
+        GuiFramework.setFont(label, false);
         panel.addControl(label);
         return label;
     }
@@ -106,7 +107,7 @@ export class Options extends State {
         panel.addControl(button);
 
         for (let index in guiControlsBold) {
-            Parameters.setFont(guiControlsBold[index], true);
+            GuiFramework.setFont(guiControlsBold[index], true);
         }
 
         var _this = this;

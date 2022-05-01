@@ -1,7 +1,7 @@
-import { Control, Button, StackPanel, TextBlock } from "@babylonjs/gui";
-import { Parameters } from "../Parameters";
+import { Control, Grid, StackPanel, TextBlock, Image } from "@babylonjs/gui";
 import { State } from "./State";
 import { States } from "./States";
+import { GuiFramework } from "../GuiFramework";
 
 export class Credits extends State {
 
@@ -14,7 +14,14 @@ export class Credits extends State {
         if (!this._adt) {
             return;
         }
+
+        GuiFramework.createBottomBar(this._adt);
         var panel = new StackPanel();
+        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        let grid = new Grid();
+        GuiFramework.formatButtonGrid(grid);
+        grid.addControl(panel, 0, 0);
+        GuiFramework.createTextPanel(grid);
 
         var textBlock = new TextBlock();
         textBlock.text = "This demo was made by some members of the Babylon.js core team, @PatrickCRyan, @skaven_, and @DarraghBurke_, " + 
@@ -27,24 +34,20 @@ export class Credits extends State {
         "To connect with the community: https://forum.babylonjs.com";
         textBlock.textWrapping = true;
         textBlock.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        textBlock.width = 0.6;
-        textBlock.height = "500px";
+        textBlock.shadowOffsetX = 2;
+        textBlock.shadowOffsetY = 2;
+        textBlock.shadowColor = "black";
+        textBlock.shadowBlur = 0;
+        textBlock.width = 0.5;
+        textBlock.height = 1.0;
         textBlock.color = "white";
-        Parameters.setFont(textBlock, false);
-        panel.addControl(textBlock);
+        GuiFramework.setFont(textBlock, false);
+        grid.addControl(textBlock, 0, 1);
 
-        var button = Button.CreateSimpleButton("but", "Back");
-        button.width = 0.2;
-        button.height = "40px";
-        button.color = "white";
-        button.background = "grey";
-        Parameters.setFont(button, true);
-        panel.addControl(button);
-
-        button.onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Back", panel).onPointerDownObservable.add(function(info) {
             State.setCurrent(States.main);
         });
 
-        this._adt.addControl(panel);
+        this._adt.addControl(grid);
     }
 }

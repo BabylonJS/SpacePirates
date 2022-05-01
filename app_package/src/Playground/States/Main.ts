@@ -1,5 +1,6 @@
 import { Nullable } from "@babylonjs/core";
-import { Control, Button, Grid, StackPanel } from "@babylonjs/gui";
+import { Control, Grid, StackPanel } from "@babylonjs/gui";
+import { ControlTreeItemComponent } from "@babylonjs/inspector/components/sceneExplorer/entities/gui/controlTreeItemComponent";
 import { fireProceduralTexturePixelShader } from "@babylonjs/procedural-textures/fire/fireProceduralTexture.fragment";
 import { GameDefinition } from "../Game";
 import { Parameters } from "../Parameters";
@@ -7,6 +8,7 @@ import { BattleSelect } from "./BattleSelect";
 import { Diorama } from "./Diorama";
 import { State } from "./State";
 import { States } from "./States";
+import { GuiFramework } from "../GuiFramework";
 
 export class Main extends State {
 
@@ -14,17 +16,6 @@ export class Main extends State {
     
     public exit() {
         super.exit();
-    }
-
-    private _addButton(label: string, panel: StackPanel): Button {
-        var button = Button.CreateSimpleButton("but", label.toUpperCase());
-        button.width = "300px";
-        button.height = "40px";
-        button.color = "white";
-        button.background = "grey";
-        Parameters.setFont(button, true);
-        panel.addControl(button);
-        return button;
     }
 
     public enter() {
@@ -35,16 +26,15 @@ export class Main extends State {
         }
 
         Main.diorama?.setEnable(this._adt);
-        
+
+        GuiFramework.createBottomBar(this._adt);
         var panel = new StackPanel();
-        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         let grid = new Grid();
-        grid.addRowDefinition(0.6, false);
-        grid.addRowDefinition(0.4, false);
-        grid.addColumnDefinition(1.0, false)
-        grid.addControl(panel, 1, 0);
-        
-        this._addButton("Single Player Battle", panel).onPointerDownObservable.add(function(info) {
+        GuiFramework.formatButtonGrid(grid);
+        grid.addControl(panel, 0, 0);
+
+        GuiFramework.addButton("Play", panel).onPointerDownObservable.add(function(info) {
             const gameDefinition = new GameDefinition();
             gameDefinition.humanAllies = 1;
             gameDefinition.aiEnemies = Parameters.enemyCount;
@@ -52,9 +42,9 @@ export class Main extends State {
             BattleSelect.gameDefinition = gameDefinition;
             State.setCurrent(States.battleSelect);
         });
-
+        
         if (Parameters.allowSplitScreen) {
-            this._addButton("Two Players Co-op", panel).onPointerDownObservable.add(function(info) {
+            GuiFramework.addButton("Two Player Co-op", panel).onPointerDownObservable.add(function(info) {
                 const gameDefinition = new GameDefinition();
                 gameDefinition.humanAllies = 2;
                 gameDefinition.aiEnemies = Parameters.enemyCount;
@@ -62,7 +52,8 @@ export class Main extends State {
                 BattleSelect.gameDefinition = gameDefinition;
                 State.setCurrent(States.battleSelect);
             });
-            this._addButton("Two Players Vs", panel).onPointerDownObservable.add(function(info) {
+
+            GuiFramework.addButton("Two Players Vs", panel).onPointerDownObservable.add(function(info) {
                 const gameDefinition = new GameDefinition();
                 gameDefinition.humanAllies = 1;
                 gameDefinition.humanEnemies = 1;
@@ -71,15 +62,14 @@ export class Main extends State {
                 BattleSelect.gameDefinition = gameDefinition;
                 State.setCurrent(States.battleSelect);
             });
-
         }
 
-        this._addButton("Options", panel).onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Options", panel).onPointerDownObservable.add(function(info) {
             States.options.backDestination = States.main;
             State.setCurrent(States.options);
         });
 
-        this._addButton("Credits", panel).onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Credits", panel).onPointerDownObservable.add(function(info) {
             State.setCurrent(States.credits);
         });
         this._adt.addControl(grid);
