@@ -155,7 +155,7 @@ export class Assets {
                         _this.vortexShader.backFaceCulling = false;
                         _this.vortexShader.alphaMode = 1;
     
-                NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/projectileVertColorShader.json", scene).then((nodeMaterial) => {
+                NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/projectileUVShader.json", scene).then((nodeMaterial) => {
                     //NodeMaterial.ParseFromSnippetAsync("9NN4T6#7", scene).then((nodeMaterial:any) => {
                     _this.projectileShader = nodeMaterial.clone("projectileMaterial", true);
                     NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/TrailShader.json", scene).then((nodeMaterial) => {
