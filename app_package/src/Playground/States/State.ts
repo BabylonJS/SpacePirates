@@ -36,6 +36,7 @@ export class State {
         const scene = GameState.gameSession?.getScene();
         this._adt = AdvancedDynamicTexture.CreateFullscreenUI("Main", true, scene);
         this._adt.layer!.layerMask = 0x10000000;
+        this._adt.idealHeight = 1440;
         window.addEventListener("resize", this._resizeListener);
     }
 

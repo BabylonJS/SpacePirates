@@ -1,7 +1,7 @@
-import { Button, Checkbox, Control, RadioButton, Slider, StackPanel, TextBlock } from "@babylonjs/gui";
+import { Button, Grid, Checkbox, Control, RadioButton, Slider, StackPanel, TextBlock, Rectangle } from "@babylonjs/gui";
 import { State } from "./State";
 import { States } from "./States";
-import { ArcRotateCamera, Camera, CreateScreenshot, FreeCamera, KeyboardEventTypes, KeyboardInfo, Nullable, Observer, Quaternion, Scene, Vector3, VolumetricLightScatteringPostProcess } from "@babylonjs/core";
+import { ArcRotateCamera, Camera, CreateScreenshot, FreeCamera, KeyboardEventTypes, KeyboardInfo, Nullable, Observer, Quaternion, Scene, Vector2, Vector3, VolumetricLightScatteringPostProcess } from "@babylonjs/core";
 import { Ship } from "../Ship";
 import { InputManager } from "../Inputs/Input";
 import { GameState } from "./GameState";
@@ -10,6 +10,8 @@ import { PlanetBaker } from "../FX/PlanetBaker";
 import { Assets } from "../Assets";
 import { World } from "../World";
 import { Parameters } from "../Parameters";
+import { GuiFramework } from "../GuiFramework";
+import { roadProceduralTexturePixelShader } from "@babylonjs/procedural-textures/road/roadProceduralTexture.fragment";
 
 export class PhotoMode extends State {
     public ship: Nullable<Ship> = null;
@@ -84,9 +86,12 @@ export class PhotoMode extends State {
         InputManager.disablePointerLock();
 
         var panel = new StackPanel();
-        panel.verticalAlignment =Control.VERTICAL_ALIGNMENT_TOP;
-        panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        panel.width = 0.2;
+        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        const grid = new Grid();
+        GuiFramework.formatButtonGrid(grid);
+        grid.addControl(panel, 0, 0);
+        const controlsGrid: Grid = GuiFramework.createScreenshotGrid();
+        grid.addControl(controlsGrid, 0, 0)
 
         var _this = this;
 
@@ -95,9 +100,11 @@ export class PhotoMode extends State {
               case KeyboardEventTypes.KEYDOWN:
                 if (kbInfo.event.key == 'h') {
                     panel.alpha = (panel.alpha === 0)? 1 : 0;
+                    controlsGrid.alpha = (controlsGrid.alpha === 0)? 1 : 0;
                 } else if (kbInfo.event.key == ' ') {
                     _this._recorder?.stop();
                     panel.alpha = 1;
+                    controlsGrid.alpha = 1;
                 } else if (kbInfo.event.key == '-') {
                     (_this._photoCamera as ArcRotateCamera).radius *= 0.99;
                 } else if (kbInfo.event.key == '+') {
@@ -113,174 +120,124 @@ export class PhotoMode extends State {
             }
         });
 
-        this._addTextLabel("Press 'h' to toggle UI", panel);
-        this._addTextLabel("Press space to stop playback", panel);
-        this._addTextLabel("Frame", panel);
-        var frameSlider = new Slider("frame");
-        //frameSlider.width = 0.2;
-        frameSlider.height = "40px";
-        frameSlider.color = "white";
-        frameSlider.background = "grey";
-        frameSlider.minimum = 0;
-        frameSlider.step = 1;
-        let framesAvailable = this._recorder.getAvailableFrames();
-        framesAvailable = framesAvailable ? framesAvailable : 0;
-        frameSlider.maximum = framesAvailable - 1;
-        frameSlider.value = framesAvailable - 1;
-        panel.addControl(frameSlider);
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(0, 1), "'h' to toggle UI", true);
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(1, 1), "Space to stop playback", true);
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(2, 0), "Ally Trails");
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(3, 0), "Enemy Trails");
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(4, 0), "Rotate Camera");
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(5, 0), "Free Camera");
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(6, 0), "Distance");
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(7, 0), "Roll");
+        GuiFramework.createScreenshotText(controlsGrid, new Vector2(8, 0), "Frame");
 
-        this._addPlaybackButton(1, panel);
-        this._addPlaybackButton(0.5, panel);
-        this._addPlaybackButton(0.25, panel);
-        this._addPlaybackButton(0.125, panel);
-        this._addButton("Stop", panel).onPointerDownObservable.add(function(info) {
-            _this._recorder?.stop();
-        });
-
-        this._addCameraRadioButton("Rotate Camera", panel, true).onIsCheckedChangedObservable.add(function(state) {
+        const rotateCam: RadioButton = GuiFramework.createRadioButton(true);
+        rotateCam.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        rotateCam.onIsCheckedChangedObservable.add(function(state) {
             if (state) {
                 _this._bindArcRotateCamera();
             }
         });
-        this._addCameraRadioButton("Free Camera", panel).onIsCheckedChangedObservable.add(function(state) {
+        controlsGrid.addControl(rotateCam, 4, 1);
+
+        const freeCam: RadioButton = GuiFramework.createRadioButton();
+        freeCam.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        freeCam.onIsCheckedChangedObservable.add(function(state) {
             if (state) {
-               _this._bindFreeCamera();
+                _this._bindFreeCamera();
             }
         });
-        this._addTextLabel("Distance", panel);
-        var distanceSlider = new Slider("Distance");
-        distanceSlider.height = "40px";
-        distanceSlider.color = "white";
-        distanceSlider.background = "grey";
-        distanceSlider.minimum = 2;
-        distanceSlider.maximum = 50;
-        distanceSlider.value = 10;
-        panel.addControl(distanceSlider);
+        controlsGrid.addControl(freeCam, 5, 1);
 
-        this._addTextLabel("Roll", panel);
-        var rollSlider = new Slider("roll");
-        rollSlider.height = "40px";
-        rollSlider.color = "white";
-        rollSlider.background = "grey";
-        rollSlider.minimum = 0;
-        rollSlider.maximum = Math.PI * 2;
-        rollSlider.value = 0;
-        panel.addControl(rollSlider);
+        const frameSlider: Slider = GuiFramework.createSlider(2, 50, 10);
+        frameSlider.width = 0.9;
+        controlsGrid.addControl(frameSlider, 8, 1);
+        let framesAvailable = this._recorder.getAvailableFrames();
+        framesAvailable = framesAvailable ? framesAvailable : 0;
+        frameSlider.maximum = framesAvailable - 1;
+        frameSlider.value = framesAvailable - 1;
+        frameSlider.step = 1;
+        frameSlider.onValueChangedObservable.add(function(value) {
+            _this._recorder?.applyFrame(value);
+        });
 
-        this._addCheck("Allies Trail", panel).onIsCheckedChangedObservable.add(function(value) {
+        const distanceSlider: Slider = GuiFramework.createSlider(2, 50, 10);
+        distanceSlider.width = 0.9;
+        controlsGrid.addControl(distanceSlider, 6, 1);
+        distanceSlider.onValueChangedObservable.add(function(value) {
+            (_this._photoCamera as ArcRotateCamera).radius = value;
+        });
+
+        const rollSlider: Slider = GuiFramework.createSlider(0, Math.PI * 2);
+        rollSlider.width = 0.9;
+        controlsGrid.addControl(rollSlider, 7, 1);
+        rollSlider.onValueChangedObservable.add(function(value) {
+            (_this._photoCamera as ArcRotateCamera).upVector = new Vector3(Math.cos(value), Math.sin(value), 0);
+        });
+
+        const allyTrailsCheck: Checkbox = GuiFramework.createCheckbox();
+        allyTrailsCheck.isChecked = true;
+        allyTrailsCheck.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        allyTrailsCheck.onIsCheckedChangedObservable.add(function(value) {
             if (_this._recorder) {
                 _this._recorder._trailVisibilityMask ^= 1;
                 _this._recorder.refreshFrame();
             }
         });
-
-        this._addCheck("Enemies Trail", panel).onIsCheckedChangedObservable.add(function(value) {
+        controlsGrid.addControl(allyTrailsCheck as Checkbox, 2, 1);
+        const enemyTrailsCheck: Checkbox = GuiFramework.createCheckbox();
+        enemyTrailsCheck.isChecked = true;
+        enemyTrailsCheck.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        enemyTrailsCheck.onIsCheckedChangedObservable.add(function(value) {
             if (_this._recorder) {
                 _this._recorder._trailVisibilityMask ^= 2;
                 _this._recorder.refreshFrame();
             }
         });
+        controlsGrid.addControl(enemyTrailsCheck as Checkbox, 3, 1);
+    
+        this._addPlaybackButton(1, panel, controlsGrid);
+        this._addPlaybackButton(0.5, panel, controlsGrid);
+        this._addPlaybackButton(0.25, panel, controlsGrid);
+        this._addPlaybackButton(0.125, panel, controlsGrid);
+        GuiFramework.addButton("Stop", panel).onPointerDownObservable.add(function(info) {
+            _this._recorder?.stop();
+        });
 
-        this._addButton("Take screen shot", panel).onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Screen shot", panel).onPointerDownObservable.add(function(info) {
             panel.alpha = 0;
+            controlsGrid.alpha = 0;
             if (_this._scene && _this._photoCamera) {
                 CreateScreenshot(_this._scene.getEngine(), _this._photoCamera, 1920, () => {
                     panel.alpha = 1;
+                    controlsGrid.alpha = 1;
                 }, "image/png", true);
             }
         });
 
-        this._addButton("Back to game menu", panel).onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Back", panel).onPointerDownObservable.add(function(info) {
             State.setCurrent(States.inGameMenu);
         });
 
-        this._adt.addControl(panel);
+        this._adt.addControl(grid);
 
         // arc rotate camera
         const position = (game.humanPlayerShips.length && game.humanPlayerShips[0]) ? game.humanPlayerShips[0].root.position : new Vector3(0, 0, 0);
         this._photoArcRotateCamera = new ArcRotateCamera("cam", 0.5, 0.5, 10, position, scene);
         this._photoFreeCamera = new FreeCamera("cam", position.clone(), scene);
-
         this._bindArcRotateCamera();
-
-        distanceSlider.onValueChangedObservable.add(function(value) {
-            (_this._photoCamera as ArcRotateCamera).radius = value;
-        });
-
-        rollSlider.onValueChangedObservable.add(function(value) {
-            (_this._photoCamera as ArcRotateCamera).upVector = new Vector3(Math.cos(value), Math.sin(value), 0);
-        });
-
-        frameSlider.onValueChangedObservable.add(function(value) {
-            _this._recorder?.applyFrame(value);
-        });
-
         this._recorder?.applyFrame(framesAvailable - 1);
     }
 
-    private _addTextLabel(text: string, panel: StackPanel): TextBlock {
-        var textBlock = new TextBlock();
-        textBlock.text = text;
-        textBlock.fontSize = 24;
-        //textBlock.width = 0.2;
-        textBlock.height = "40px";
-        textBlock.color = "white";
-        Parameters.setFont(textBlock, false);
-        panel.addControl(textBlock);
-        return textBlock;
-    }
-
-    private _addCheck(text: string, panel: StackPanel)
-    {
-        const check = new Checkbox("Enemies Trail");
-        check.width = "20px";
-        check.height = "20px";
-        check.isChecked = true;
-        check.color = "white";
-
-        var header = Control.AddHeader(check, text, "200px", { isHorizontal: true, controlFirst: true });
-        header.height = "30px";
-        header.color = "white";
-        header.background = "grey";
-        Parameters.setFont(header, false);
-        panel.addControl(header);
-        return check;
-    }
-
-    private _addButton(text: string, panel: StackPanel): Button {
-        var button = Button.CreateSimpleButton("button", text.toUpperCase());
-        button.height = "40px";
-        button.color = "white";
-        button.background = "grey";
-        Parameters.setFont(button, true);
-        panel.addControl(button);
-        return button;
-    }
-
-    private _addCameraRadioButton(text: string, panel: StackPanel, checked: boolean = false): RadioButton {
-        var button = new RadioButton();
-        button.width = "20px";
-        button.height = "20px";
-        button.color = "white";
-        button.background = "grey";
-        button.isChecked = checked;
-
-        var header = Control.AddHeader(button, text, "200px", { isHorizontal: true, controlFirst: true });
-        header.height = "30px";
-        header.color = "white";
-        header.background = "grey";
-        Parameters.setFont(header, false); 
-        panel.addControl(header);
-        return button;
-    }
-
-    private _addPlaybackButton(speed: number, panel: StackPanel): Button {
+    private _addPlaybackButton(speed: number, panel: StackPanel, controlsGrid: Grid): Button {
         var _this = this;
-        var button = this._addButton("Play " + speed, panel);
+        var button = GuiFramework.addButton("Play " + speed, panel);
         button.onPointerDownObservable.add(function(info) {
             panel.alpha = 0;
+            controlsGrid.alpha = 0;
+            
             _this._recorder?.playback(speed, () =>{
                 panel.alpha = 1;
+                controlsGrid.alpha = 1;
             });
         });
         return button;

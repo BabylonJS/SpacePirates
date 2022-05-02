@@ -1,4 +1,4 @@
-import { Control, Image, Grid, Button, StackPanel, TextBlock } from "@babylonjs/gui";
+import { Control, Grid, StackPanel } from "@babylonjs/gui";
 import { State } from "./State";
 import { States } from "./States";
 import { GameState } from "./GameState";
@@ -22,27 +22,36 @@ export class Dead extends State {
         InputManager.disablePointerLock();
 
         GuiFramework.createBottomBar(this._adt);
-        let stats = new StackPanel();
+        let stats = GuiFramework.createRecapGrid();
         var panel = new StackPanel();
         panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         let grid = new Grid();
         GuiFramework.formatButtonGrid(grid);
         grid.addControl(panel, 0, 0);
-        GuiFramework.createTextPanel(grid);
+        let panelGrid: Grid = GuiFramework.createTextPanel(grid);
+        GuiFramework.createPageTitle("Defeat", panelGrid);
         grid.addControl(stats, 0, 1);
 
-        this._addText("Wasted !!!", stats);
+        const splashText = GuiFramework.createSplashText("Wasted!!!");
+        stats.addControl(splashText, 0, 0);
+
+        const statsGrid = GuiFramework.createStatsGrid();
+        stats.addControl(statsGrid, 1, 0);
+
         if (this.ship && this.ship.statistics) {
             const s = this.ship.statistics;
-            this._addText("Damage dealt :" + s.damageDealt, stats);
-            this._addText("Damage taken :" + s.damageTaken, stats);
-            this._addText("Ships destroyed :" + s.shipsDestroyed, stats);
-            this._addText("Time of battle :" + Math.round(s.timeOfBattle/1000)+" seconds", stats);
-            this._addText("Shots fired :" + s.shotFired, stats);
-            this._addText("Shots hitting :" + s.shotHitting, stats);
-            this._addText("Missiles fired :" + s.missilesFired, stats);
-            this._addText("Allies Asteroid Crash: " + Statistics.alliesCrash, stats);
-            this._addText("Enemies Asteroid Crash: " + Statistics.enemiesCrash, stats);
+            GuiFramework.createParameter(statsGrid, "Damage dealt", GuiFramework.createStatText(s.damageDealt as unknown as string));
+            GuiFramework.createParameter(statsGrid, "Damage taken", GuiFramework.createStatText(s.damageTaken as unknown as string));
+            GuiFramework.createParameter(statsGrid, "Ships destroyed", GuiFramework.createStatText(s.shipsDestroyed as unknown as string));
+            let minutes = Math.floor(Math.round(s.timeOfBattle/1000)/60);
+            let seconds = Math.floor((Math.round(s.timeOfBattle/1000)/60 - minutes) * 60);
+            GuiFramework.createParameter(statsGrid, "Time of battle", GuiFramework.createStatText(minutes + " min " + seconds + " sec" as unknown as string));
+            GuiFramework.createParameter(statsGrid, "Shots fired", GuiFramework.createStatText(s.shotFired as unknown as string));
+            let accuracy: string = (s.shotFired > 0) ? Math.round((s.shotHitting / s.shotFired) * 100) + "%" as unknown as string : "0%";
+            GuiFramework.createParameter(statsGrid, "Accuracy", GuiFramework.createStatText(accuracy));
+            GuiFramework.createParameter(statsGrid, "Missiles fired", GuiFramework.createStatText(s.missilesFired as unknown as string));
+            GuiFramework.createParameter(statsGrid, "Allies Asteroid Crash", GuiFramework.createStatText(Statistics.alliesCrash as unknown as string));
+            GuiFramework.createParameter(statsGrid, "Enemies Asteroid Crash", GuiFramework.createStatText(Statistics.enemiesCrash as unknown as string));
         }
 
         GuiFramework.addButton("Try again", panel).onPointerDownObservable.add(function(info) {

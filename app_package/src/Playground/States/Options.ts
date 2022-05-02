@@ -1,7 +1,8 @@
 import { Nullable } from "@babylonjs/core";
-import { Button, Checkbox, Slider, StackPanel, TextBlock } from "@babylonjs/gui";
+import { Control, Grid, Checkbox, Slider, StackPanel } from "@babylonjs/gui";
 import { InputManager } from "../Inputs/Input";
 import { State } from "./State";
+import { States } from "./States";
 import { Parameters } from '../Parameters';
 import { Settings } from "../../Settings";
 import { GuiFramework } from "../GuiFramework";
@@ -14,41 +15,6 @@ export class Options extends State {
         super.exit();
     }
 
-    private makeLabel(panel: StackPanel) {
-        const label = new TextBlock();
-        label.width = 0.6;
-        label.height = "20px";
-        label.color = "white";
-        label.topInPixels = 20;
-        GuiFramework.setFont(label, false);
-        panel.addControl(label);
-        return label;
-    }
-
-    private makeSlider(panel: StackPanel, name: string, labelFunction: () => string, updateFunction: (value: number) => void, initialValue: number) {
-        const label = this.makeLabel(panel);
-        const updateLabel = () => {
-            label.text = labelFunction();
-        }
-        updateLabel();
-
-        const slider = new Slider("volume");
-
-        slider.step = 0.05;
-        slider.value = initialValue;
-        slider.onValueChangedObservable.add(() => {
-            updateFunction(slider.value);
-            updateLabel();
-        });
-        slider.heightInPixels = 40;
-        slider.paddingBottomInPixels = 20;
-        slider.widthInPixels = 300;
-        slider.color = "black";
-        slider.thumbColor = "white";
-        panel.addControl(slider);
-        return slider;
-    }
-
     public enter() {
         super.enter();
         if (!this._adt) {
@@ -56,67 +22,42 @@ export class Options extends State {
         }
         InputManager.disablePointerLock();
 
-        let guiControlsBold: any = [];       
-        var panel = new StackPanel();
+        GuiFramework.createBottomBar(this._adt);
+        const panel = new StackPanel();
+        const parametersPanel = new StackPanel();
+        panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        const grid = new Grid();
+        GuiFramework.formatButtonGrid(grid);
+        grid.addControl(panel, 0, 0);
+        grid.addControl(parametersPanel, 0, 1);
+        const panelGrid: Grid = GuiFramework.createTextPanel(grid);
+        GuiFramework.createPageTitle("Options", panelGrid);
 
-        var textBlock = new TextBlock();
-        textBlock.text = "Options".toUpperCase();
-        textBlock.width = 0.6;
-        textBlock.height = "100px";
-        textBlock.color = "white";
-        guiControlsBold.push(textBlock);
-        panel.addControl(textBlock);
-
-        const volume = this.makeSlider(panel,"volume", () => `Volume: ${Math.floor(Settings.volume * 100)}%`, (value) => Settings.volume = value, Settings.volume);
-        volume.minimum = 0;
-        volume.maximum = 1;
-        const sensitivity = this.makeSlider(panel, "sensitivty", () => `Sensitivity: ${Math.floor(Settings.sensitivity * 100)}%`, (value) => Settings.sensitivity = value, Settings.sensitivity)
-        sensitivity.minimum = 0.05;
-        sensitivity.maximum = 2;
-
-        const showParametersLabel = this.makeLabel(panel);
-        showParametersLabel.text = "Show Parameters";
-        const showParameters = new Checkbox("parameters");
-        showParameters.widthInPixels = 20;
-        showParameters.heightInPixels = 20;
-        showParameters.isChecked = Settings.showParameters;
-        showParameters.onIsCheckedChangedObservable.add((checked) => {
+        const parametersGrid = GuiFramework.createParametersGrid();
+        grid.addControl(parametersGrid, 0, 1);
+        const volumeSlider: Control = GuiFramework.createParameter(parametersGrid, "Volume", GuiFramework.createSlider(0, 1.0), Settings.volume);
+        (volumeSlider as Slider).onValueChangedObservable.add((newValue) => {
+            Settings.volume = newValue;
+        });
+        const sensitivitySlider: Control = GuiFramework.createParameter(parametersGrid, "Sensitivity", GuiFramework.createSlider(0.05, 2.0), Settings.sensitivity);
+        (sensitivitySlider as Slider).onValueChangedObservable.add((newValue) => {
+            Settings.sensitivity = newValue;
+        });
+        const showParameters: Control = GuiFramework.createParameter(parametersGrid, "Show Parameters", GuiFramework.createCheckbox(), Number(Settings.showParameters));
+        (showParameters as Checkbox).onIsCheckedChangedObservable.add((checked) => {
             Settings.showParameters = checked;
-        })
-        showParameters.color = "white";
-        panel.addControl(showParameters);
-
-        const invertYLabel = this.makeLabel(panel);
-        invertYLabel.text = "Invert Y";
-        const invertY = new Checkbox("invertY");
-        invertY.isChecked = Settings.invertY;
-        invertY.onIsCheckedChangedObservable.add((checked) => {
+        });
+        const invertY: Control = GuiFramework.createParameter(parametersGrid, "Invert Y", GuiFramework.createCheckbox(), Number(Settings.invertY));
+        (invertY as Checkbox).onIsCheckedChangedObservable.add((checked) => {
             Settings.invertY = checked;
-        })
-        invertY.widthInPixels = 20;
-        invertY.heightInPixels = 20;
-        invertY.color = 'white';
-        panel.addControl(invertY);
-
-        var button = Button.CreateSimpleButton("but", "Back");
-        button.width = 0.2;
-        button.height = "40px";
-        button.color = "white";
-        button.background = "grey";
-        guiControlsBold.push(button);
-        panel.addControl(button);
-
-        for (let index in guiControlsBold) {
-            GuiFramework.setFont(guiControlsBold[index], true);
-        }
+        });
 
         var _this = this;
-        button.onPointerDownObservable.add(function(info) {
+        GuiFramework.addButton("Back", panel).onPointerDownObservable.add(function(info) {
             if (_this.backDestination) {
                 State.setCurrent(_this.backDestination);
             }
         });
-
-        this._adt.addControl(panel);
+        this._adt.addControl(grid);
     }
 }

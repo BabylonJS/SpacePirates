@@ -16,12 +16,15 @@ export class Credits extends State {
         }
 
         GuiFramework.createBottomBar(this._adt);
+        let creditBlock = GuiFramework.createRecapGrid();
         var panel = new StackPanel();
         panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         let grid = new Grid();
         GuiFramework.formatButtonGrid(grid);
         grid.addControl(panel, 0, 0);
-        GuiFramework.createTextPanel(grid);
+        let panelGrid: Grid = GuiFramework.createTextPanel(grid);
+        GuiFramework.createPageTitle("Credits", panelGrid);
+        grid.addControl(creditBlock, 0, 1);
 
         var textBlock = new TextBlock();
         textBlock.text = "This demo was made by some members of the Babylon.js core team, @PatrickCRyan, @skaven_, and @DarraghBurke_, " + 
@@ -33,16 +36,19 @@ export class Credits extends State {
         "To learn about Babylon.js: https://doc.babylonjs.com \n" + 
         "To connect with the community: https://forum.babylonjs.com";
         textBlock.textWrapping = true;
+        textBlock.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         textBlock.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        textBlock.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         textBlock.shadowOffsetX = 2;
         textBlock.shadowOffsetY = 2;
         textBlock.shadowColor = "black";
         textBlock.shadowBlur = 0;
-        textBlock.width = 0.5;
+        textBlock.width = 0.7;
         textBlock.height = 1.0;
         textBlock.color = "white";
-        GuiFramework.setFont(textBlock, false);
-        grid.addControl(textBlock, 0, 1);
+        textBlock.fontSize = 24;
+        GuiFramework.setFont(textBlock, false, true);
+        creditBlock.addControl(textBlock, 1, 0);
 
         GuiFramework.addButton("Back", panel).onPointerDownObservable.add(function(info) {
             State.setCurrent(States.main);
