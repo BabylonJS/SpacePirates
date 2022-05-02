@@ -90,7 +90,7 @@ export class GuiFramework {
         grid.addControl(rect, cell.x, cell.y);
     }
 
-    public static createRadioButton(checked: boolean) {
+    public static createRadioButton(checked?: boolean) {
         let radio = new RadioButton();
         radio.color = "#ffffff";
         radio.background = "#688899";
@@ -102,7 +102,7 @@ export class GuiFramework {
         radio.checkSizeRatio = 0.5;
         radio.fixedRatio = 1.0;
         radio.leftInPixels = 20;
-        radio.isChecked = checked;
+        radio.isChecked = (checked) ? checked : false;
         return radio;
     }
 
