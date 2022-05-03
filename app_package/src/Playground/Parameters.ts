@@ -101,7 +101,7 @@ export class Parameters {
         this.mouseSensitivty = 0.0003;
         this.timeToLockMissile = 2000;
         this.playerTurnRate = 0.04;
-        this.AIPerceptionCone = 0.4;
+        this.AIPerceptionCone = -0.5;
         this.AIFollowDistance = -10;
         this.AIPredictionRange = 2;
         this.AITurnRate = 0.04;
@@ -111,10 +111,10 @@ export class Parameters {
         this.AIEvadeTime = 3000;
         this.AIMinimumSpeed = 1;
         this.AIMaximumSpeed = 5;
-        this.AIFireRange = 400;
+        this.AIFireRange = 550;
         this.AIBreakDistance = 30;
         this.AIBurstDistance = 500;
-        this.AIMaxTargets = 1;
+        this.AIMaxTargets = 4;
         this.AIDebugLabels = false;
         this.AIImmelmannProbability = 0.2;
         this.ImmelmannDuration = 1000;
