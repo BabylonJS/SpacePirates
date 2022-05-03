@@ -58,7 +58,7 @@ class HUDPanel {
             this._bars.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_RIGHT;
         } else {
             this._bars.leftInPixels = 20;
-            this._bars.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+            this._bars.horizontalAlignment = InputManager.isTouch ? StackPanel.HORIZONTAL_ALIGNMENT_CENTER : StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
         }
         this._bars.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_BOTTOM;
         this._bars.width = 0.2;
