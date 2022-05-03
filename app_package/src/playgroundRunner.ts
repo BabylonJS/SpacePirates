@@ -1,7 +1,5 @@
 import { Engine, MorphTargetManager, NativeEngine, WebGPUEngine } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
-import "@babylonjs/inspector";
-import "@babylonjs/node-editor";
 import { CreatePlaygroundScene } from "./Playground/playground";
 import { Main } from "./Playground/States/Main";
 import { Parameters } from "./Playground/Parameters";

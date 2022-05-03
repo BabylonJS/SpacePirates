@@ -1,7 +1,5 @@
 import { Nullable } from "@babylonjs/core";
 import { Control, Grid, StackPanel } from "@babylonjs/gui";
-import { ControlTreeItemComponent } from "@babylonjs/inspector/components/sceneExplorer/entities/gui/controlTreeItemComponent";
-import { fireProceduralTexturePixelShader } from "@babylonjs/procedural-textures/fire/fireProceduralTexture.fragment";
 import { GameDefinition } from "../Game";
 import { Parameters } from "../Parameters";
 import { BattleSelect } from "./BattleSelect";

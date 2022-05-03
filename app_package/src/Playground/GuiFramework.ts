@@ -1,7 +1,5 @@
 import { Engine, Vector2 } from "@babylonjs/core";
 import { Control, Button, Grid, StackPanel, Image, CornerHandle, AdvancedDynamicTexture, TextBlock, Rectangle, Slider, Checkbox, RadioButton } from "@babylonjs/gui";
-import { SpotLightPropertyGridComponent } from "@babylonjs/inspector/components/actionTabs/tabs/propertyGrids/lights/spotLightPropertyGridComponent";
-import { LockObject } from "@babylonjs/inspector/tabs/propertyGrids/lockObject";
 
 export class GuiFramework {
     public static guiFont = {

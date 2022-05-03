@@ -191,6 +191,7 @@ export class Game
             this._checkVictory(scene.getEngine().getDeltaTime() / 1000);
         });
 
+        /* inspector
         this._hotkeyObservable = scene.onKeyboardObservable.add((kbInfo) => {
             switch (kbInfo.type) {
               case KeyboardEventTypes.KEYDOWN:
@@ -204,6 +205,7 @@ export class Game
                 break;
             }
         });
+        */
 
         this._delayedEnd = gameDefinition.delayedEnd;
     }
