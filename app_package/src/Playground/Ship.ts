@@ -902,7 +902,7 @@ export class ShipManager {
                 if (fireDot > Parameters.AIFirePrecision && ship.dotToAlly < Parameters.AIFriendlyFirePrecision && distanceToTarget < Parameters.AIFireRange) {
                     input.shooting = true;
                 }
-                // input.launchMissile = true;
+
                 break;
             case AIState.WANDER:
                 input.dx = Math.cos(this.time * 0.002) * Parameters.AITurnRate;

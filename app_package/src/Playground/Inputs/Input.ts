@@ -48,37 +48,34 @@ export class InputManager {
         InputManager.setupPointerLock();
 
         scene.onKeyboardObservable.add((kbInfo) => {
-            //console.log(kbInfo.event.keyCode);
-            //if (kbInfo.event.keyCode >= 37 && kbInfo.event.keyCode <= 40) {
-                switch (kbInfo.type) {
-                    case KeyboardEventTypes.KEYDOWN:
-                        if (kbInfo.event.keyCode == 39)
-                            InputManager.input.shooting = true;
-                        else if (kbInfo.event.keyCode == 40)
-                            InputManager.input.launchMissile = true; 
-                        else if (kbInfo.event.keyCode == 87) {
-                            InputManager.input.burst = true;
-                        } else if (kbInfo.event.keyCode == 83){
-                            InputManager.input.breaking  = true;
-                        } else if (kbInfo.event.keyCode == 81) {
-                            InputManager.input.immelmann = true;
-                        }
-                        break;
-                    case KeyboardEventTypes.KEYUP:
-                        if (kbInfo.event.keyCode == 39)
-                            InputManager.input.shooting = false;
-                        else if (kbInfo.event.keyCode == 40)
-                            InputManager.input.launchMissile = false;
-                        else if (kbInfo.event.keyCode == 87) {
-                            InputManager.input.burst = false;
-                        } else if (kbInfo.event.keyCode == 83){
-                            InputManager.input.breaking  = false;
-                        } else if (kbInfo.event.keyCode == 81) {
-                            InputManager.input.immelmann = false;
-                        }
-                        break;
-                }
-            //}
+            switch (kbInfo.type) {
+                case KeyboardEventTypes.KEYDOWN:
+                    /*if (kbInfo.event.keyCode == 39) {
+                        InputManager.input.shooting = true;
+                    } else if (kbInfo.event.keyCode == 40) {
+                        InputManager.input.launchMissile = true;
+                    } else*/ if (kbInfo.event.keyCode == 87) {
+                        InputManager.input.burst = true;
+                    } else if (kbInfo.event.keyCode == 83){
+                        InputManager.input.breaking  = true;
+                    } else if (kbInfo.event.keyCode == 81) {
+                        InputManager.input.immelmann = true;
+                    }
+                    break;
+                case KeyboardEventTypes.KEYUP:
+                    /*if (kbInfo.event.keyCode == 39) {
+                        InputManager.input.shooting = false;
+                    } else if (kbInfo.event.keyCode == 40) {
+                        InputManager.input.launchMissile = false;
+                    } else*/ if (kbInfo.event.keyCode == 87) {
+                        InputManager.input.burst = false;
+                    } else if (kbInfo.event.keyCode == 83){
+                        InputManager.input.breaking  = false;
+                    } else if (kbInfo.event.keyCode == 81) {
+                        InputManager.input.immelmann = false;
+                    }
+                    break;
+            }
         });
         
         InputManager.isTouch = isTouchDevice();
