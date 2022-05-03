@@ -6,6 +6,7 @@ import { State } from "./State";
 import { States } from "./States";
 import { Assets } from "../Assets";
 import { GuiFramework } from "../GuiFramework";
+import { InputManager } from "../Inputs/Input";
 
 export class BattleSelect extends State {
 
@@ -37,6 +38,19 @@ export class BattleSelect extends State {
 
         const splashText = GuiFramework.createSplashText("");
         instructions.addControl(splashText, 0, 0);
+
+        const inputControls = GuiFramework.createStatsGrid();
+        instructions.addControl(inputControls, 1, 0);
+
+        if (InputManager.isTouch) {
+
+        } else {
+            GuiFramework.createParameter(inputControls, "Steer", GuiFramework.createStatText("Mouse"));
+            GuiFramework.createParameter(inputControls, "Fire Cannons", GuiFramework.createStatText("Left Mouse Button"));
+            GuiFramework.createParameter(inputControls, "Fire Missile", GuiFramework.createStatText("Right Mouse Button"));
+            GuiFramework.createParameter(inputControls, "Afterburners", GuiFramework.createStatText("W"));
+            GuiFramework.createParameter(inputControls, "Brake", GuiFramework.createStatText("S"));
+        }
         
         Assets.missions.forEach((scenario: any) => {
             let button = GuiFramework.addButton(scenario.name, panel)

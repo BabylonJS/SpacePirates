@@ -72,17 +72,33 @@ class HUDPanel {
         // adt.addControl(this._bars);
 
         this._statsPanel = new Rectangle("statsPanel");
-        this._statsPanel.widthInPixels = 425;
         this._statsPanel.heightInPixels = 185;
         this._statsPanel.thickness = 0;
-        this._statsPanel.left = "90px";
-        this._statsPanel.top = "-90px";
         if (index) {
-            this._statsPanel.horizontalAlignment = InputManager.isTouch ? Control.HORIZONTAL_ALIGNMENT_CENTER : Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            if(InputManager.isTouch) {
+                this._statsPanel.width = 1.0;
+                this._statsPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+                this._statsPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;        
+            } else {
+                this._statsPanel.widthInPixels = 425;
+                this._statsPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+                this._statsPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;        
+                this._statsPanel.left = "-90px";
+                this._statsPanel.top = "-90px";
+            }
         } else {
-            this._statsPanel.horizontalAlignment = InputManager.isTouch ? Control.HORIZONTAL_ALIGNMENT_CENTER : Control.HORIZONTAL_ALIGNMENT_LEFT;
+            if(InputManager.isTouch) {
+                this._statsPanel.width = 1.0;
+                this._statsPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+                this._statsPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;        
+            } else {
+                this._statsPanel.widthInPixels = 425;
+                this._statsPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+                this._statsPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;        
+                this._statsPanel.left = "90px";
+                this._statsPanel.top = "-90px";
+            }
         }
-        this._statsPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         adt.addControl(this._statsPanel)
 
         this._statsPanelImage = new Image("statsPanelImage", "/assets/UI/statsPanel.svg");
@@ -273,21 +289,27 @@ export class HUD {
             this._hudPanels.push(new HUDPanel(assets, this._adt, players.length, i));
         }
         this._aiCounter = new Rectangle("aiCounter");
-        this._aiCounter.widthInPixels = 445;
         this._aiCounter.heightInPixels = 185;
         this._aiCounter.thickness = 0;
-        this._aiCounter.left = "80px";
-        this._aiCounter.top = "-90px";
-        this._aiCounter.horizontalAlignment = InputManager.isTouch ? Control.HORIZONTAL_ALIGNMENT_CENTER : Control.HORIZONTAL_ALIGNMENT_LEFT
-        this._aiCounter.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        if (InputManager.isTouch) {
+            this._aiCounter.width = 1.0;
+            this._aiCounter.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            this._aiCounter.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        } else {
+            this._aiCounter.widthInPixels = 445;
+            this._aiCounter.left = "80px";
+            this._aiCounter.top = "-90px";    
+            this._aiCounter.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            this._aiCounter.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        }
         this._adt.addControl(this._aiCounter)
 
         this._aiCounterGrid = new Grid();
         this._aiCounterGrid.addRowDefinition(0.55, false);
         this._aiCounterGrid.addRowDefinition(0.45, false);
-        this._aiCounterGrid.addColumnDefinition(80, true);
-        this._aiCounterGrid.addColumnDefinition(1.0, false);
-        this._aiCounterGrid.addColumnDefinition(80, true);
+        this._aiCounterGrid.addColumnDefinition(0.5, false);
+        this._aiCounterGrid.addColumnDefinition(300, true);
+        this._aiCounterGrid.addColumnDefinition(0.5, false);
         this._aiCounterGrid.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         this._aiCounterGrid.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         this._aiCounterGrid.height = 1.0;
