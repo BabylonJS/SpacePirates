@@ -78,7 +78,7 @@
 {"name":"Battle", "description":"Are you ready for a full\n space battle?",
     "gameDefinition":{
         "seed" : 20220305,
-        "asteroidCount" : 200,
+        "asteroidCount" : 100,
         "asteroidRadius" : 1000,
         "humanAllies": 1,
         "humanEnemies": 0,
