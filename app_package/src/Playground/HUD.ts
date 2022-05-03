@@ -1,5 +1,5 @@
 import { AdvancedDynamicTexture, Control, StackPanel, TextBlock, Slider, Image, InputText, Checkbox, Button, Rectangle, Grid } from "@babylonjs/gui";
-import { Vector3, Vector4, Engine, Camera, Nullable, Scene, Color3, ThinEngine } from "@babylonjs/core";
+import { Vector3, Vector4, Engine, Camera, Nullable, Scene, Color3, ThinEngine, InputBlock } from "@babylonjs/core";
 import { ShipManager, Ship } from './Ship';
 import { Parameters } from './Parameters';
 import { InputManager } from './Inputs/Input';
@@ -105,33 +105,42 @@ class HUDPanel {
         this._statsPanelImage.widthInPixels = 300;
         this._statsPanelImage.heightInPixels = 185;
         this._statsPanelImage.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        this._statsPanel.addControl(this._statsPanelImage);
+        if (InputManager.isTouch === false) {
+            this._statsPanel.addControl(this._statsPanelImage);
+        }
 
         this._statsGrid = new Grid();
-        this._statsGrid.addRowDefinition(40, true);
-        this._statsGrid.addRowDefinition(40, true);
-        this._statsGrid.addRowDefinition(40, true);
         this._statsGrid.addColumnDefinition(45, true);
         this._statsGrid.addColumnDefinition(1.0, false);
+        if (InputManager.isTouch) {
+            this._statsGrid.addRowDefinition(15, true);
+            this._statsGrid.addRowDefinition(15, true);
+            this._statsGrid.addRowDefinition(15, true);
+        } else {
+            this._statsGrid.addRowDefinition(40, true);
+            this._statsGrid.addRowDefinition(40, true);
+            this._statsGrid.addRowDefinition(40, true);
+            this._statsGrid.top = "38px";
+        }
         this._statsGrid.widthInPixels = 200;
         this._statsGrid.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         this._statsGrid.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        this._statsGrid.top = "38px";
         this._statsPanel.addControl(this._statsGrid);
 
+        let size = (InputManager.isTouch) ? 10 : 35;
         this._healthIcon = new Image("health", "/assets/UI/healthIcon.svg");
-        this._healthIcon.widthInPixels = 35;
-        this._healthIcon.heightInPixels = 35;
+        this._healthIcon.widthInPixels = size;
+        this._healthIcon.heightInPixels = size;
         this._statsGrid.addControl(this._healthIcon, 0, 0);
 
         this._speedIcon = new Image("health", "/assets/UI/speedIcon.svg");
-        this._speedIcon.widthInPixels = 35;
-        this._speedIcon.heightInPixels = 35;
+        this._speedIcon.widthInPixels = size;
+        this._speedIcon.heightInPixels = size;
         this._statsGrid.addControl(this._speedIcon, 1, 0);
 
         this._reloadIcon = new Image("health", "/assets/UI/reloadIcon.svg");
-        this._reloadIcon.widthInPixels = 35;
-        this._reloadIcon.heightInPixels = 35;
+        this._reloadIcon.widthInPixels = size;
+        this._reloadIcon.heightInPixels = size;
         this._statsGrid.addControl(this._reloadIcon, 2, 0);
 
         this._health = new Slider("health");
@@ -289,13 +298,14 @@ export class HUD {
             this._hudPanels.push(new HUDPanel(assets, this._adt, players.length, i));
         }
         this._aiCounter = new Rectangle("aiCounter");
-        this._aiCounter.heightInPixels = 185;
         this._aiCounter.thickness = 0;
         if (InputManager.isTouch) {
+            this._aiCounter.height = 0.1;
             this._aiCounter.width = 1.0;
             this._aiCounter.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
             this._aiCounter.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         } else {
+            this._aiCounter.heightInPixels = 185;
             this._aiCounter.widthInPixels = 445;
             this._aiCounter.left = "80px";
             this._aiCounter.top = "-90px";    
@@ -318,8 +328,13 @@ export class HUD {
 
         this._alliesRemaining = new TextBlock("alliesRemaining");
         this._alliesRemaining.color = "white";
-        this._alliesRemaining.heightInPixels = 40;
-        this._alliesRemaining.fontSize = "30px";
+        if (InputManager.isTouch) {
+            this._alliesRemaining.height = 1.0;
+            this._alliesRemaining.fontSize = "15px";
+        } else {
+            this._alliesRemaining.heightInPixels = 40;
+            this._alliesRemaining.fontSize = "30px";
+        }
         this._alliesRemaining.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
         this._alliesRemaining.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         this._alliesRemaining.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
@@ -329,8 +344,13 @@ export class HUD {
 
         this._alliesRemainingLabel = new TextBlock("_alliesRemainingLabel");
         this._alliesRemainingLabel.color = "white";
-        this._alliesRemainingLabel.heightInPixels = 40;
-        this._alliesRemainingLabel.fontSize = "14px";
+        if (InputManager.isTouch) {
+            this._alliesRemainingLabel.height = 1.0;
+            this._alliesRemainingLabel.fontSize = "10px";
+        } else {
+            this._alliesRemainingLabel.heightInPixels = 40;
+            this._alliesRemainingLabel.fontSize = "14px";
+        }
         this._alliesRemainingLabel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
         this._alliesRemainingLabel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         this._alliesRemainingLabel.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
@@ -340,8 +360,13 @@ export class HUD {
 
         this._enemiesRemaining = new TextBlock("enemiesRemaining");
         this._enemiesRemaining.color = "white";
-        this._enemiesRemaining.heightInPixels = 40;
-        this._enemiesRemaining.fontSize = "30px";
+        if (InputManager.isTouch) {
+            this._enemiesRemaining.height = 1.0;
+            this._enemiesRemaining.fontSize = "15px";
+        } else {
+            this._enemiesRemaining.heightInPixels = 40;
+            this._enemiesRemaining.fontSize = "30px";
+        }
         this._enemiesRemaining.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         this._enemiesRemaining.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         this._enemiesRemaining.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -351,8 +376,13 @@ export class HUD {
 
         this._enemiesRemainingLabel = new TextBlock("_enemiesRemainingLabel");
         this._enemiesRemainingLabel.color = "white";
-        this._enemiesRemainingLabel.heightInPixels = 40;
-        this._enemiesRemainingLabel.fontSize = "14px";
+        if (InputManager.isTouch) {
+            this._enemiesRemainingLabel.height = 1.0;
+            this._enemiesRemainingLabel.fontSize = "10px";
+        } else {
+            this._enemiesRemainingLabel.heightInPixels = 40;
+            this._enemiesRemainingLabel.fontSize = "14px";
+        }
         this._enemiesRemainingLabel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         this._enemiesRemainingLabel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         this._enemiesRemainingLabel.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
