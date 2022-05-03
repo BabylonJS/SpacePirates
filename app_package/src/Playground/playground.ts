@@ -1,4 +1,4 @@
-import { Scene, Vector3, Engine, FreeCamera, DirectionalLight, Color3, GlowLayer, ImageProcessingConfiguration, Color4 } from "@babylonjs/core";
+import { Scene, Vector3, Engine, FreeCamera, DirectionalLight, Color3, GlowLayer, ImageProcessingConfiguration, Color4, Nullable } from "@babylonjs/core";
 import { Assets } from "./Assets";
 import { States } from "./States/States";
 import { State } from "./States/State";

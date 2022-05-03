@@ -86,7 +86,8 @@ export async function initializeBabylonApp(options: InitializeBabylonAppOptions)
         await (engine as WebGPUEngine).initAsync();
         engine.compatibilityMode = false;
     } else {
-        engine = new Engine(canvas);
+        const badOS = /iPad/i.test(navigator.userAgent) || /iPhone/i.test(navigator.userAgent);
+        engine = new Engine(canvas, !badOS);
     }
 
     (window as any).engine = engine;

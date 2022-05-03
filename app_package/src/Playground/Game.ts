@@ -44,7 +44,7 @@ export class Game
     private _scene: Scene;
     private _inputManager: InputManager;
     private _renderObserver: Nullable<Observer<Scene>> = null;
-    private _HUD: HUD;
+    private _HUD: Nullable<HUD>;
     private _speed: number = 1;
     private _targetSpeed: number = 1;
     private _recorder: Nullable<Recorder> = null;
@@ -175,7 +175,9 @@ export class Game
 
             this._shotManager.tick(deltaTime, this._world);
             this._missileManager.tick(deltaTime, this._explosions, this._world);
-            this._HUD.tick(scene.getEngine(), this._speed, this.humanPlayerShips);
+            if (this._HUD) {
+                this._HUD.tick(scene.getEngine(), this._speed, this.humanPlayerShips);
+            }
             if (this._recorder) {
                 this._recorder.tick();
             }
@@ -238,6 +240,10 @@ export class Game
 
         if (!player) {
             if (this._delayedEnd <= 0) {
+                if (this._HUD) {
+                    this._HUD.dispose();
+                    this._HUD = null;
+                }
                 State.setCurrent(States.dead);
             }
             this._delayedEnd -= deltaTime;
@@ -245,6 +251,11 @@ export class Game
         else if (!enemyCount) {
             if (this._delayedEnd <= 0) {
                 States.victory.ship = player;
+                if (this._HUD) {
+                    this._HUD.dispose();
+                    this._HUD = null;
+                }
+
                 State.setCurrent(States.victory);
             }
             this._delayedEnd -= deltaTime;
@@ -256,7 +267,10 @@ export class Game
         this._shipManager.dispose();
         this._missileManager.dispose();
         this._shotManager.dispose();
-        this._HUD.dispose();
+        if (this._HUD) {
+            this._HUD.dispose();
+            this._HUD = null;
+        }
         this._inputManager.dispose();
         if (this._recorder) {
             this._recorder.dispose();

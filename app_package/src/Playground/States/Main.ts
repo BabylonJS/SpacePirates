@@ -31,6 +31,8 @@ export class Main extends State {
         var panel = new StackPanel();
         panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         let grid = new Grid();
+        grid.paddingBottom = "100px";
+        grid.paddingLeft = "100px";
         GuiFramework.formatButtonGrid(grid);
         grid.addControl(panel, 0, 0);
 

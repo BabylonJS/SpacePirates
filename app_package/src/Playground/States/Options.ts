@@ -27,6 +27,8 @@ export class Options extends State {
         const parametersPanel = new StackPanel();
         panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         const grid = new Grid();
+        grid.paddingBottom = "100px";
+        grid.paddingLeft = "100px";
         GuiFramework.formatButtonGrid(grid);
         grid.addControl(panel, 0, 0);
         grid.addControl(parametersPanel, 0, 1);
