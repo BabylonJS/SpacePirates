@@ -1,5 +1,5 @@
-import { AdvancedDynamicTexture, Control, StackPanel, TextBlock, Slider, Image, InputText, Checkbox, Button } from "@babylonjs/gui";
-import { Vector3, Vector4, Engine, Camera, Nullable, Scene, Color3 } from "@babylonjs/core";
+import { AdvancedDynamicTexture, Control, StackPanel, TextBlock, Slider, Image, InputText, Checkbox, Button, Rectangle, Grid } from "@babylonjs/gui";
+import { Vector3, Vector4, Engine, Camera, Nullable, Scene, Color3, ThinEngine } from "@babylonjs/core";
 import { ShipManager, Ship } from './Ship';
 import { Parameters } from './Parameters';
 import { InputManager } from './Inputs/Input';
@@ -7,12 +7,19 @@ import { TouchInput } from "./Inputs/TouchInput";
 import { Settings } from "../Settings";
 import { GamepadInput } from "./Inputs/GamepadInput";
 import { Assets } from "./Assets";
+import { GuiFramework } from "./GuiFramework";
 
 class HUDPanel {
-    private _bars: StackPanel;
+    // private _bars: StackPanel;
+    private _health : Slider;
     private _missile: Slider
     private _speed: Slider
-    private _health: Slider;
+    private _statsPanel : Rectangle
+    private _statsPanelImage : Image;
+    private _statsGrid : Grid;
+    private _healthIcon : Image;
+    private _speedIcon : Image;
+    private _reloadIcon : Image;
     private _targets = new Array<Image>();
     private _targetLock: Image;
     private _divisor: number;
@@ -51,45 +58,93 @@ class HUDPanel {
         this._targetLock.isVisible = false;
         adt.addControl(this._targetLock);
 
-        this._bars = new StackPanel("bars");
-        this._bars.paddingBottomInPixels = 20;
+        // this._bars = new StackPanel("bars");
+        // this._bars.paddingBottomInPixels = 20;
+        // if (index) {
+        //     this._bars.leftInPixels = 20;
+        //     this._bars.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_RIGHT;
+        // } else {
+        //     this._bars.leftInPixels = 20;
+        //     this._bars.horizontalAlignment = InputManager.isTouch ? StackPanel.HORIZONTAL_ALIGNMENT_CENTER : StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        // }
+        // this._bars.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_BOTTOM;
+        // this._bars.width = 0.2;
+        // adt.addControl(this._bars);
+
+        this._statsPanel = new Rectangle("statsPanel");
+        this._statsPanel.widthInPixels = 425;
+        this._statsPanel.heightInPixels = 185;
+        this._statsPanel.thickness = 0;
+        this._statsPanel.left = "90px";
+        this._statsPanel.top = "-90px";
         if (index) {
-            this._bars.leftInPixels = 20;
-            this._bars.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_RIGHT;
+            this._statsPanel.horizontalAlignment = InputManager.isTouch ? Control.HORIZONTAL_ALIGNMENT_CENTER : Control.HORIZONTAL_ALIGNMENT_RIGHT;
         } else {
-            this._bars.leftInPixels = 20;
-            this._bars.horizontalAlignment = InputManager.isTouch ? StackPanel.HORIZONTAL_ALIGNMENT_CENTER : StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+            this._statsPanel.horizontalAlignment = InputManager.isTouch ? Control.HORIZONTAL_ALIGNMENT_CENTER : Control.HORIZONTAL_ALIGNMENT_LEFT;
         }
-        this._bars.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_BOTTOM;
-        this._bars.width = 0.2;
-        adt.addControl(this._bars);
+        this._statsPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        adt.addControl(this._statsPanel)
+
+        this._statsPanelImage = new Image("statsPanelImage", "/assets/UI/statsPanel.svg");
+        this._statsPanelImage.widthInPixels = 300;
+        this._statsPanelImage.heightInPixels = 185;
+        this._statsPanelImage.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this._statsPanel.addControl(this._statsPanelImage);
+
+        this._statsGrid = new Grid();
+        this._statsGrid.addRowDefinition(40, true);
+        this._statsGrid.addRowDefinition(40, true);
+        this._statsGrid.addRowDefinition(40, true);
+        this._statsGrid.addColumnDefinition(45, true);
+        this._statsGrid.addColumnDefinition(1.0, false);
+        this._statsGrid.widthInPixels = 200;
+        this._statsGrid.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this._statsGrid.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this._statsGrid.top = "38px";
+        this._statsPanel.addControl(this._statsGrid);
+
+        this._healthIcon = new Image("health", "/assets/UI/healthIcon.svg");
+        this._healthIcon.widthInPixels = 35;
+        this._healthIcon.heightInPixels = 35;
+        this._statsGrid.addControl(this._healthIcon, 0, 0);
+
+        this._speedIcon = new Image("health", "/assets/UI/speedIcon.svg");
+        this._speedIcon.widthInPixels = 35;
+        this._speedIcon.heightInPixels = 35;
+        this._statsGrid.addControl(this._speedIcon, 1, 0);
+
+        this._reloadIcon = new Image("health", "/assets/UI/reloadIcon.svg");
+        this._reloadIcon.widthInPixels = 35;
+        this._reloadIcon.heightInPixels = 35;
+        this._statsGrid.addControl(this._reloadIcon, 2, 0);
 
         this._health = new Slider("health");
-        this._health.color = "red";
-        this._health.heightInPixels = 20;
-        this._health.width = 1;
+        this._health.color = "#af2d0e";
+        this._health.background = "#878787";
+        this._health.height = 1.0;
         this._health.displayThumb = false;
         this._health.minimum = 0;
         this._health.maximum = 100;
-        this._bars.addControl(this._health);
-
-        this._missile = new Slider("MissileLoading");
-        this._missile.color = "white";
-        this._missile.heightInPixels = 20;
-        this._missile.width = 1;
-        this._missile.displayThumb = false;
-        this._missile.minimum = 0;
-        this._missile.maximum = Parameters.missileCoolDownTime;
-        this._bars.addControl(this._missile);
+        this._statsGrid.addControl(this._health, 0, 1);
 
         this._speed = new Slider("Speed");
-        this._speed.color = "orange";
-        this._speed.heightInPixels = 20;
-        this._speed.width = 1;
+        this._speed.color = "#e8b410";
+        this._speed.background = "#878787";
+        this._speed.height = 1.0;
         this._speed.displayThumb = false;
         this._speed.minimum = 0;
         this._speed.maximum = 1;
-        this._bars.addControl(this._speed);
+        this._statsGrid.addControl(this._speed, 1, 1);
+
+        this._missile = new Slider("MissileLoading");
+        this._missile.background = "#05d000";
+        this._missile.color = "#878787";
+        this._missile.rotation = Math.PI;
+        this._missile.height = 1.0;
+        this._missile.displayThumb = false;
+        this._missile.minimum = 0;
+        this._missile.maximum = Parameters.missileCoolDownTime;
+        this._statsGrid.addControl(this._missile, 2, 1);
     }
 
     public tick(engine: Engine, player: Ship, shipManager: ShipManager): void {
@@ -134,7 +189,8 @@ class HUDPanel {
     }
 
     public setAlpha(alpha: number):void {
-        this._bars.alpha = alpha;
+        // this._bars.alpha = alpha;
+        this._statsPanel.alpha = alpha;
         this._missile.alpha = alpha;
         this._speed.alpha = alpha;
         this._health.alpha = alpha;
@@ -195,12 +251,15 @@ class HUDPanel {
 export class HUD {
     private _adt: AdvancedDynamicTexture;
     private _enemiesRemaining: TextBlock;
+    private _enemiesRemainingLabel: TextBlock;
     private _alliesRemaining: TextBlock;
+    private _alliesRemainingLabel : TextBlock;
     private _shipManager: ShipManager;
-    private _counters: StackPanel;
     private _hudPanels: Array<HUDPanel>;
     private _parameters: StackPanel;
     private _touchInput : Nullable<TouchInput> = null;
+    private _aiCounter : Rectangle;
+    private _aiCounterGrid : Grid;
     constructor(shipManager : ShipManager, assets: Assets, scene: Scene, players: Array<Ship>) {
         console.log(JSON.stringify(Object.getOwnPropertyNames(Parameters)));
         this._shipManager = shipManager;
@@ -213,22 +272,71 @@ export class HUD {
         for (let i = 0; i < players.length; i++) {
             this._hudPanels.push(new HUDPanel(assets, this._adt, players.length, i));
         }
-        
-        this._counters = new StackPanel("counters");
-        this._counters.topInPixels = 20;
-        this._counters.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_TOP;
-        this._counters.fontFamily = "'Courier New', monospace";
-        this._adt.addControl(this._counters);
+        this._aiCounter = new Rectangle("aiCounter");
+        this._aiCounter.widthInPixels = 445;
+        this._aiCounter.heightInPixels = 185;
+        this._aiCounter.thickness = 0;
+        this._aiCounter.left = "80px";
+        this._aiCounter.top = "-90px";
+        this._aiCounter.horizontalAlignment = InputManager.isTouch ? Control.HORIZONTAL_ALIGNMENT_CENTER : Control.HORIZONTAL_ALIGNMENT_LEFT
+        this._aiCounter.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        this._adt.addControl(this._aiCounter)
 
-        this._enemiesRemaining = new TextBlock("enemiesRemaining");
-        this._enemiesRemaining.color = "white";
-        this._enemiesRemaining.heightInPixels = 20;
-        this._counters.addControl(this._enemiesRemaining);
+        this._aiCounterGrid = new Grid();
+        this._aiCounterGrid.addRowDefinition(0.55, false);
+        this._aiCounterGrid.addRowDefinition(0.45, false);
+        this._aiCounterGrid.addColumnDefinition(80, true);
+        this._aiCounterGrid.addColumnDefinition(1.0, false);
+        this._aiCounterGrid.addColumnDefinition(80, true);
+        this._aiCounterGrid.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this._aiCounterGrid.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        this._aiCounterGrid.height = 1.0;
+        this._aiCounterGrid.width = 1.0;
+        this._aiCounter.addControl(this._aiCounterGrid);
 
         this._alliesRemaining = new TextBlock("alliesRemaining");
         this._alliesRemaining.color = "white";
-        this._alliesRemaining.heightInPixels = 20;
-        this._counters.addControl(this._alliesRemaining);
+        this._alliesRemaining.heightInPixels = 40;
+        this._alliesRemaining.fontSize = "30px";
+        this._alliesRemaining.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._alliesRemaining.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        this._alliesRemaining.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._alliesRemaining.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        GuiFramework.setFont(this._alliesRemaining, true, true);
+        this._aiCounterGrid.addControl(this._alliesRemaining, 0, 0);
+
+        this._alliesRemainingLabel = new TextBlock("_alliesRemainingLabel");
+        this._alliesRemainingLabel.color = "white";
+        this._alliesRemainingLabel.heightInPixels = 40;
+        this._alliesRemainingLabel.fontSize = "14px";
+        this._alliesRemainingLabel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._alliesRemainingLabel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this._alliesRemainingLabel.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._alliesRemainingLabel.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        GuiFramework.setFont(this._alliesRemainingLabel, true, true);
+        this._aiCounterGrid.addControl(this._alliesRemainingLabel, 1, 0);
+
+        this._enemiesRemaining = new TextBlock("enemiesRemaining");
+        this._enemiesRemaining.color = "white";
+        this._enemiesRemaining.heightInPixels = 40;
+        this._enemiesRemaining.fontSize = "30px";
+        this._enemiesRemaining.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this._enemiesRemaining.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        this._enemiesRemaining.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this._enemiesRemaining.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        GuiFramework.setFont(this._enemiesRemaining, true, true);
+        this._aiCounterGrid.addControl(this._enemiesRemaining, 0, 2);
+
+        this._enemiesRemainingLabel = new TextBlock("_enemiesRemainingLabel");
+        this._enemiesRemainingLabel.color = "white";
+        this._enemiesRemainingLabel.heightInPixels = 40;
+        this._enemiesRemainingLabel.fontSize = "14px";
+        this._enemiesRemainingLabel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this._enemiesRemainingLabel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this._enemiesRemainingLabel.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this._enemiesRemainingLabel.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        GuiFramework.setFont(this._enemiesRemainingLabel, true, true);
+        this._aiCounterGrid.addControl(this._enemiesRemainingLabel, 1, 2);
 
         if (Parameters.AIDebugLabels) {
             this._shipManager.ships.forEach(ship => {
@@ -285,14 +393,14 @@ export class HUD {
             }
         });
 
-        this._enemiesRemaining.text = `Enemies Remaining: ${enemyCount}`;
-        this._alliesRemaining.text = `Allies Remaining: ${allyCount}`;
+        this._enemiesRemaining.text = `${enemyCount}`;
+        this._alliesRemaining.text = `${allyCount}`;
+        this._alliesRemainingLabel.text = "ALLIES";
+        this._enemiesRemainingLabel.text = "ENEMIES"
 
         // tick alpha from game speed, should hide HUD instead
-        this._enemiesRemaining.alpha = gameSpeed;
-        this._alliesRemaining.alpha = gameSpeed;
-        this._counters.alpha = gameSpeed;
-        
+        this._aiCounter.alpha = gameSpeed;
+
         this._hudPanels.forEach((hudPanel) => {
             hudPanel.setAlpha(gameSpeed);
         });
