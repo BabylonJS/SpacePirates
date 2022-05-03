@@ -17,7 +17,6 @@ export class ShotManager {
 
     public shots = Array<Shot>();
     private _matricesData = new Float32Array(16 * MAX_SHOTS);
-    private _colorData = new Float32Array(4 * MAX_SHOTS);
     private _shotMesh: Nullable<Mesh> = null;
     private _tmpVec3: Vector3 = new Vector3();
 
@@ -44,27 +43,19 @@ export class ShotManager {
             this.shots.push({ttl:-1});
 
             m.copyToArray(this._matricesData, index * 16);
-
-            this._colorData[index * 4 + 0] = 1;
-            this._colorData[index * 4 + 1] = 0;
-            this._colorData[index * 4 + 2] = 0;
-            this._colorData[index * 4 + 3] = 1;
-
             index++;
         }
 
         shotMesh.thinInstanceSetBuffer("matrix", this._matricesData, 16, false);
-        shotMesh.thinInstanceSetBuffer("color", this._colorData, 4, false);
 
         //GLOW LAYER ISSUE
         glowLayer.referenceMeshToUseItsOwnMaterial(shotMesh);
 
-        var mat = new StandardMaterial("material", scene);
-        shotMesh.material = mat;
-        mat.disableLighting = true;
-        mat.emissiveColor = Color3.White();
-        mat.alphaMode = Engine.ALPHA_ADD;
-        mat.alpha = 0.33;
+        var mat = assets.projectileShader?.clone("projectiles");
+        if (mat) {
+            shotMesh.material = mat;
+            mat.alphaMode = Engine.ALPHA_ADD;
+        }
         this._shotMesh = shotMesh;
     }
 
@@ -72,16 +63,13 @@ export class ShotManager {
         return this._matricesData;
     }
 
-    public getColorData(): Float32Array {
-        return this._colorData;
-    }
-
     public getMatrices() : Float32Array {
         return this._matricesData;
     }
 
     public addShot(ship: Ship, worldMatrix: Matrix, isHuman: boolean, cannonIndex: number): void {
-        for (var index = 0; index < MAX_SHOTS; index++) {
+        const startIndex = ship.faction ? (MAX_SHOTS / 2) : 0;
+        for (var index = startIndex; index < (startIndex + MAX_SHOTS / 2); index++) {
             
             if (this.shots[index].ttl <= 0) {
                 const flIndex = index * 16;
@@ -96,9 +84,6 @@ export class ShotManager {
                     this._matricesData[flIndex + 13] += offsetCannon.y;
                     this._matricesData[flIndex + 14] += offsetCannon.z;
 
-                    this._colorData[clIndex] = isHuman ? 1 : 0;
-                    this._colorData[clIndex+1] = isHuman ? 0 : 1;
-                    this._colorData[clIndex+2] = 0;
                     this.shots[index].ttl = 5000;
                     this.shots[index].firedBy = ship;
                 }
@@ -133,7 +118,6 @@ export class ShotManager {
     public matricesToInstances(): void {
         if (this._shotMesh) {
             this._shotMesh.thinInstanceBufferUpdated("matrix");
-            this._shotMesh.thinInstanceBufferUpdated("color");
         }
     }
 

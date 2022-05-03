@@ -21,7 +21,6 @@ class TimedEffect {
 class Shots {
     shots = Array<Shot>();
     matricesData = new Float32Array(16 * MAX_SHOTS);
-    colorData = new Float32Array(4 * MAX_SHOTS);
 }
 
 class TrailData {
@@ -98,7 +97,6 @@ class RecordFrame {
         }
 
         this.shots.matricesData.set(shotManager.getMatrixData());
-        this.shots.colorData.set(shotManager.getColorData());
         this.shots.shots = shotManager.shots.slice(0);
     }
 
@@ -157,7 +155,6 @@ class RecordFrame {
         trailManager.update();
 
         shotManager.getMatrixData().set(this.shots.matricesData);
-        shotManager.getColorData().set(this.shots.colorData);
         shotManager.shots = this.shots.shots.slice(0);
         shotManager.matricesToInstances();
     }
@@ -229,7 +226,7 @@ class RecordFrame {
         for (let i = 0; i < 16 * MAX_SHOTS; i++) {
             dest[i] = A[i] + (B[i] - A[i]) * t;
         }
-        shotManager.getColorData().set(this.shots.colorData);
+
         shotManager.shots = this.shots.shots.slice(0);
         shotManager.matricesToInstances();
     }
