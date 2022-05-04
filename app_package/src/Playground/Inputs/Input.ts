@@ -45,6 +45,8 @@ export class InputManager {
         InputManager._scene = scene;
         InputManager._canvas = canvas;
 
+        InputManager.isTouch = isTouchDevice();
+
         InputManager.setupPointerLock();
 
         scene.onKeyboardObservable.add((kbInfo) => {
@@ -78,7 +80,6 @@ export class InputManager {
             }
         });
         
-        InputManager.isTouch = isTouchDevice();
         GamepadInput.initialize();
     }
 
