@@ -1,17 +1,18 @@
 import { Nullable } from "@babylonjs/core";
-import { Control, Grid, StackPanel } from "@babylonjs/gui";
+import { Control, Grid, StackPanel, Button } from "@babylonjs/gui";
 import { GameDefinition } from "../Game";
 import { Parameters } from "../Parameters";
 import { BattleSelect } from "./BattleSelect";
 import { Diorama } from "./Diorama";
 import { State } from "./State";
 import { States } from "./States";
+import { Assets } from "../Assets";
 import { GuiFramework } from "../GuiFramework";
 
 export class Main extends State {
 
     public static diorama: Nullable<Diorama> = null;
-    
+    public static playButton: Nullable<Button> = null;
     public exit() {
         super.exit();
     }
@@ -34,7 +35,10 @@ export class Main extends State {
         GuiFramework.formatButtonGrid(grid);
         grid.addControl(panel, 0, 0);
 
-        GuiFramework.addButton("Play", panel).onPointerDownObservable.add(function(info) {
+        Main.playButton = GuiFramework.addButton("Play", panel);
+        Main.playButton.isVisible = Assets.loadingComplete;
+        
+        Main.playButton.onPointerDownObservable.add(function(info) {
             const gameDefinition = new GameDefinition();
             gameDefinition.humanAllies = 1;
             gameDefinition.aiEnemies = Parameters.enemyCount;

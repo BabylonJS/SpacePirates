@@ -51,7 +51,9 @@ export class Assets {
     public shieldEffectMaterial: Nullable<NodeMaterial> = null;
     public projectile: Nullable<AbstractMesh> = null;
 
-    constructor(scene:Scene, assetsHostUrl: string, whenReady: (assets:Assets) => void)
+    public static loadingComplete: boolean = false;
+
+    constructor(scene:Scene, assetsHostUrl: string, whenReady: (assets:Assets) => void, whenLoadingComplete: (assets:Assets) => void)
     {
             var _this = this;
             this.assetsHostUrl = assetsHostUrl;
@@ -68,24 +70,10 @@ export class Assets {
 
             scene.environmentTexture = this.envCube;
             scene.environmentIntensity = 1.25;
-            /*
-            NodeMaterial.ParseFromSnippetAsync("L292KC#14", scene).then((nodeMaterial: NodeMaterial) => {
-                (nodeMaterial.getBlockByName("hitColor") as InputBlock).value = Color3.FromInts(10, 236, 230)
-                this.shieldEffectMaterial = nodeMaterial;
-            });
-*/
-            var assetsManager = new AssetsManager(scene);
-            var raiderTask = assetsManager.addMeshTask("raiderTask", "", assetsHostUrl + "/assets/gltf/", "raider_mesh.glb");
-            raiderTask.onSuccess = function (task: MeshAssetTask) {
-                _this.raider = task.loadedMeshes[0];
-                _this.raider.getChildTransformNodes().forEach((m: TransformNode) => {
-                    if (m.name == "raider_cannon_L")
-                        _this.raidercannonL = m.absolutePosition.clone();
-                    else if (m.name == "raider_cannon_R")
-                        _this.raidercannonR = m.absolutePosition.clone();
-                });
-            };
-            var valkyrieTask = assetsManager.addMeshTask("valkyrieTask", "", assetsHostUrl + "/assets/gltf/", "valkyrie_mesh.glb");
+
+            // MINIMAL loading
+            var assetsManagerMinimal = new AssetsManager(scene);
+            var valkyrieTask = assetsManagerMinimal.addMeshTask("valkyrieTask", "", assetsHostUrl + "/assets/gltf/", "valkyrie_mesh.glb");
             valkyrieTask.onSuccess = function (task: MeshAssetTask) {
                 _this.valkyrie = task.loadedMeshes[0];
                 _this.valkyrie.getChildTransformNodes().forEach((m: TransformNode) => {
@@ -95,7 +83,8 @@ export class Assets {
                         _this.valkyriecannonR = m.absolutePosition.clone();
                 });
             };
-            var starsGeoTask = assetsManager.addMeshTask("starsGeoTask", "", assetsHostUrl + "/assets/gltf/", "starsGeo.glb");
+
+            var starsGeoTask = assetsManagerMinimal.addMeshTask("starsGeoTask", "", assetsHostUrl + "/assets/gltf/", "starsGeo.glb");
             starsGeoTask.onSuccess = function (task: MeshAssetTask) {
                 _this.starfield = task.loadedMeshes[1];
                 if (_this.starfield) {
@@ -103,48 +92,18 @@ export class Assets {
                     _this.starfield.visibility = 0;
                 }
             };
-            var explosionMeshTask = assetsManager.addMeshTask("explosionMeshTask", "", assetsHostUrl + "/assets/gltf/", "explosionSpheres_mesh.glb");
-            explosionMeshTask.onSuccess = function (task: MeshAssetTask) {
-                _this.explosionMesh = task.loadedMeshes[1];
-                _this.explosionMesh.parent = null;
-                _this.explosionMesh.material?.dispose();
-            };
-            var asteroidsTask = assetsManager.addContainerTask("asteroidsTask", "", assetsHostUrl + "/assets/gltf/", "asteroids_meshes.glb");
-            asteroidsTask.onSuccess = function (task: ContainerAssetTask) {
-                _this.asteroidMeshes = task.loadedContainer;
-            };
-            var asteroidsTask = assetsManager.addContainerTask("asteroidsTask", "", assetsHostUrl + "/assets/gltf/", "asteroid_V1.glb");
-            asteroidsTask.onSuccess = function (task: ContainerAssetTask) {
-                _this.asteroidLocation = task.loadedContainer;
-            };
-            var thrusterTask = assetsManager.addMeshTask("thrusterTask", "", assetsHostUrl + "/assets/gltf/", "thrusterFlame_mesh.glb");
+
+            var thrusterTask = assetsManagerMinimal.addMeshTask("thrusterTask", "", assetsHostUrl + "/assets/gltf/", "thrusterFlame_mesh.glb");
             thrusterTask.onSuccess = function (task: MeshAssetTask) {
                 _this.thrusterMesh = task.loadedMeshes[1];
             };
 
-            var vortexTask = assetsManager.addMeshTask("vortexTask", "", assetsHostUrl + "/assets/gltf/", "vortex_mesh.glb");
+            var vortexTask = assetsManagerMinimal.addMeshTask("vortexTask", "", assetsHostUrl + "/assets/gltf/", "vortex_mesh.glb");
             vortexTask.onSuccess = function (task: MeshAssetTask) {
                 _this.vortexMesh = task.loadedMeshes[1];
             };
 
-            var projectileTask = assetsManager.addMeshTask("projectileTask", "", assetsHostUrl + "/assets/gltf/", "projectile_mesh.glb");
-            projectileTask.onSuccess = function (task: MeshAssetTask) {
-                _this.projectile = task.loadedMeshes[1];
-                _this.projectile.scaling = new Vector3(100,100,100);
-                
-                (_this.projectile as any).bakeTransformIntoVertices(_this.projectile.computeWorldMatrix(true));
-                _this.projectile.setEnabled(false);
-            };
-            var missionsTask = assetsManager.addTextFileTask("missionsTask", assetsHostUrl + "/assets/missions.json");
-            missionsTask.onSuccess = function (task: TextFileAssetTask) {
-                Assets.missions = JSON.parse(task.text);
-            };
-
-            this.sunTexture = new Texture(assetsHostUrl + "/assets/textures/sun.png", scene, true, false, Texture.BILINEAR_SAMPLINGMODE);
-
-            assetsManager.onTasksDoneObservable.add(() => {
-                NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/shields.json", scene).then((nodeMaterial) => {
-                    _this.shieldEffectMaterial = nodeMaterial;
+            assetsManagerMinimal.onTasksDoneObservable.add(() => {
 
                 NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/thrusterFlame.json", scene).then((nodeMaterial) => {
                     _this.thrusterShader = nodeMaterial.clone("thrusterMaterial", true);
@@ -154,7 +113,87 @@ export class Assets {
                         _this.vortexShader = nodeMaterial.clone("vortexMaterial", true);
                         _this.vortexShader.backFaceCulling = false;
                         _this.vortexShader.alphaMode = 1;
-    
+
+                        const starfieldShaderName = Parameters.starfieldHeavyShader ? "/assets/shaders/starfieldShaderHeavy.json" : "/assets/shaders/starfieldShader.json";
+                        NodeMaterial.ParseFromFileAsync("", assetsHostUrl + starfieldShaderName, scene).then((nodeMaterial) => {
+                            //nodeMaterial.build(false);
+                            if (_this.starfield) {
+                                _this.starfieldTexture = new Texture(assetsHostUrl + "/assets/textures/starfield_panorama_texture.jpg", scene, false, false);
+                                if(nodeMaterial.getBlockByName("emissiveTex")) {
+                                    _this.starfieldTextureBlock = nodeMaterial.getBlockByName("emissiveTex");
+                                    (_this.starfieldTextureBlock as TextureBlock).texture = _this.starfieldTexture;
+                                }
+                                _this.starfield.material = nodeMaterial;
+                            }
+                            _this.starfieldMaterial = nodeMaterial; 
+                            console.log("Minimal asset loading done");
+                            if (useNative) {
+                                Tools.LoadFileAsync("https://raw.githubusercontent.com/CedricGuillemet/dump/master/droidsans.ttf", true).then((data) => { 
+                                    _native.Canvas.loadTTFAsync("Arial", data); 
+                                    whenReady(_this);
+                                });
+                            } else {
+                                whenReady(_this);
+                            }
+                            // minimal done
+                            this._completeLoading(scene, assetsHostUrl, whenLoadingComplete);
+                        });
+                    });
+                });
+                
+            });
+            assetsManagerMinimal.load();
+    }
+
+    private _completeLoading(scene: Scene, assetsHostUrl: string, whenLoadingComplete: (assets:Assets) => void): void {
+        // COMPLETE loading
+        var _this = this;
+        var assetsManager = new AssetsManager(scene);
+        var raiderTask = assetsManager.addMeshTask("raiderTask", "", assetsHostUrl + "/assets/gltf/", "raider_mesh.glb");
+        raiderTask.onSuccess = function (task: MeshAssetTask) {
+            _this.raider = task.loadedMeshes[0];
+            _this.raider.getChildTransformNodes().forEach((m: TransformNode) => {
+                if (m.name == "raider_cannon_L")
+                    _this.raidercannonL = m.absolutePosition.clone();
+                else if (m.name == "raider_cannon_R")
+                    _this.raidercannonR = m.absolutePosition.clone();
+            });
+        };
+
+        var explosionMeshTask = assetsManager.addMeshTask("explosionMeshTask", "", assetsHostUrl + "/assets/gltf/", "explosionSpheres_mesh.glb");
+        explosionMeshTask.onSuccess = function (task: MeshAssetTask) {
+            _this.explosionMesh = task.loadedMeshes[1];
+            _this.explosionMesh.parent = null;
+            _this.explosionMesh.material?.dispose();
+        };
+        var asteroidsTask = assetsManager.addContainerTask("asteroidsTask", "", assetsHostUrl + "/assets/gltf/", "asteroids_meshes.glb");
+        asteroidsTask.onSuccess = function (task: ContainerAssetTask) {
+            _this.asteroidMeshes = task.loadedContainer;
+        };
+        var asteroidsTask = assetsManager.addContainerTask("asteroidsTask", "", assetsHostUrl + "/assets/gltf/", "asteroid_V1.glb");
+        asteroidsTask.onSuccess = function (task: ContainerAssetTask) {
+            _this.asteroidLocation = task.loadedContainer;
+        };
+
+        var projectileTask = assetsManager.addMeshTask("projectileTask", "", assetsHostUrl + "/assets/gltf/", "projectile_mesh.glb");
+        projectileTask.onSuccess = function (task: MeshAssetTask) {
+            _this.projectile = task.loadedMeshes[1];
+            _this.projectile.scaling = new Vector3(100,100,100);
+            
+            (_this.projectile as any).bakeTransformIntoVertices(_this.projectile.computeWorldMatrix(true));
+            _this.projectile.setEnabled(false);
+        };
+        var missionsTask = assetsManager.addTextFileTask("missionsTask", assetsHostUrl + "/assets/missions.json");
+        missionsTask.onSuccess = function (task: TextFileAssetTask) {
+            Assets.missions = JSON.parse(task.text);
+        };
+
+        this.sunTexture = new Texture(assetsHostUrl + "/assets/textures/sun.png", scene, true, false, Texture.BILINEAR_SAMPLINGMODE);
+
+        assetsManager.onTasksDoneObservable.add(() => {
+            NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/shields.json", scene).then((nodeMaterial) => {
+                _this.shieldEffectMaterial = nodeMaterial;
+
                 NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/projectileUVShader.json", scene).then((nodeMaterial) => {
                     //NodeMaterial.ParseFromSnippetAsync("19ALD5#7", scene).then((nodeMaterial:any) => {
                     _this.projectileShader = nodeMaterial.clone("projectileMaterial", true);
@@ -167,35 +206,16 @@ export class Assets {
                             (_this.explosionMaterial.getBlockByName("noiseTex") as TextureBlock).texture = new Texture(assetsHostUrl + "/assets/textures/noise_squareMask.png", scene, false, false);
                             _this.explosionMaterial.backFaceCulling = false;
                             _this.explosionMaterial.alphaMode = 1;
+                            NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/planetShaderGreybox.json", scene).then((nodeMaterial) => {
+                                _this.planetMaterial = nodeMaterial;
+                                NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/SparksShader.json", scene).then((nodeMaterial) => {
+                                    _this.sparksEffect = nodeMaterial;
+                                    NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/asteroidsTriplanarShader.json", scene).then((nodeMaterial) => {
+                                        _this.asteroidsTriPlanar = nodeMaterial;
 
-                            const starfieldShaderName = Parameters.starfieldHeavyShader ? "/assets/shaders/starfieldShaderHeavy.json" : "/assets/shaders/starfieldShader.json";
-                            NodeMaterial.ParseFromFileAsync("", assetsHostUrl + starfieldShaderName, scene).then((nodeMaterial) => {
-                                //nodeMaterial.build(false);
-                                if (_this.starfield) {
-                                    _this.starfieldTexture = new Texture(assetsHostUrl + "/assets/textures/starfield_panorama_texture.jpg", scene, false, false);
-                                    if(nodeMaterial.getBlockByName("emissiveTex")) {
-                                        _this.starfieldTextureBlock = nodeMaterial.getBlockByName("emissiveTex");
-                                        (_this.starfieldTextureBlock as TextureBlock).texture = _this.starfieldTexture;
-                                    }
-                                    _this.starfield.material = nodeMaterial;
-                                }
-                                _this.starfieldMaterial = nodeMaterial; 
-            
-                                NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/planetShaderGreybox.json", scene).then((nodeMaterial) => {
-                                    _this.planetMaterial = nodeMaterial;
-                                    NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/SparksShader.json", scene).then((nodeMaterial) => {
-                                        _this.sparksEffect = nodeMaterial;
-                                        NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/asteroidsTriplanarShader.json", scene).then((nodeMaterial) => {
-                                            _this.asteroidsTriPlanar = nodeMaterial;
-                                            if (useNative) {
-                                                Tools.LoadFileAsync("https://raw.githubusercontent.com/CedricGuillemet/dump/master/droidsans.ttf", true).then((data) => { 
-                                                    _native.Canvas.loadTTFAsync("Arial", data); 
-                                                    whenReady(_this);
-                                                });
-                                            } else {
-                                                whenReady(_this);
-                                            }
-                                        });
+                                        Assets.loadingComplete = true;
+                                        whenLoadingComplete(this);
+                                        console.log("Complete asset loading done");
                                     });
                                 });
                             });
@@ -204,12 +224,9 @@ export class Assets {
                 });
             });
         });
-    });
-});
 
         assetsManager.load();
     }
-
     async loadAssets() {
         return new Promise((resolve, reject) => {
         });

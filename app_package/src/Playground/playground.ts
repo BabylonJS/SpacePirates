@@ -47,6 +47,11 @@ class Playground {
             State.setCurrent(States.main);
             // jump directly in the game
             //State.setCurrent(States.gameState);
+        },
+        (assets) => {
+            if (Main.playButton) {
+                Main.playButton.isVisible = true;
+            }
         });
         return scene;
     }
