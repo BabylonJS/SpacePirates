@@ -134,7 +134,7 @@ export class InputManager {
     };
 
     public static disablePointerLock() {
-        if (!useNative) {
+        if (!useNative && !InputManager.isTouch) {
             if (document.exitPointerLock) {
                 document.exitPointerLock();
             }
@@ -147,7 +147,7 @@ export class InputManager {
 
     public static setupPointerLock() {
 
-        if (!useNative) {
+        if (!useNative && !InputManager.isTouch) {
             // register the callback when a pointerlock event occurs
             document.addEventListener('pointerlockchange', InputManager.changeCallback, false);
             document.addEventListener('mozpointerlockchange', InputManager.changeCallback, false);
