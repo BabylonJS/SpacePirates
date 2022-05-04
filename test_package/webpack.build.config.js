@@ -4,7 +4,7 @@ const { DefinePlugin } = require("webpack");
 
 module.exports = {
     entry: "./src/index.js",
-    mode: "development",
+    mode: "production",
     devServer: {
         open: true,
         watchFiles: ["./src/**/*", "../app_package/lib/**/*"]
