@@ -12,7 +12,6 @@ export class Assets {
     public valkyrie: Nullable<AbstractMesh> = null;
     public trailMaterial: Nullable<NodeMaterial> = null;
     public starfieldMaterial: Nullable<NodeMaterial> = null;
-    public starfieldTexture: Nullable<Texture> = null;
     public sunTexture: Nullable<Texture> = null;
     public starfieldTextureBlock: Nullable<NodeMaterialBlock> = null;
     public planetMaterial: Nullable<NodeMaterial> = null;
@@ -57,9 +56,7 @@ export class Assets {
     {
             var _this = this;
             this.assetsHostUrl = assetsHostUrl;
-            if (Parameters.enableAudio) {
-                this.audio = new AudioAssets(assetsHostUrl, scene);
-            }
+            
             // add in IBL with linked environment
             this.envCube = CubeTexture.CreateFromPrefilteredData(assetsHostUrl + "/assets/env/environment.env", scene);
             this.envCube.name = "environment";
@@ -118,10 +115,10 @@ export class Assets {
                         NodeMaterial.ParseFromFileAsync("", assetsHostUrl + starfieldShaderName, scene).then((nodeMaterial) => {
                             //nodeMaterial.build(false);
                             if (_this.starfield) {
-                                _this.starfieldTexture = new Texture(assetsHostUrl + "/assets/textures/starfield_panorama_texture.jpg", scene, false, false);
+                                const starfieldTexture = new Texture(assetsHostUrl + "/assets/textures/starfield_panorama_texture_mini.jpg", scene, false, false);
                                 if(nodeMaterial.getBlockByName("emissiveTex")) {
                                     _this.starfieldTextureBlock = nodeMaterial.getBlockByName("emissiveTex");
-                                    (_this.starfieldTextureBlock as TextureBlock).texture = _this.starfieldTexture;
+                                    (_this.starfieldTextureBlock as TextureBlock).texture = starfieldTexture;
                                 }
                                 _this.starfield.material = nodeMaterial;
                             }
@@ -213,6 +210,14 @@ export class Assets {
                                     NodeMaterial.ParseFromFileAsync("", assetsHostUrl + "/assets/shaders/asteroidsTriplanarShader.json", scene).then((nodeMaterial) => {
                                         _this.asteroidsTriPlanar = nodeMaterial;
 
+                                        if (Parameters.enableAudio) {
+                                            this.audio = new AudioAssets(assetsHostUrl, scene);
+                                        }
+
+                                        const starfieldTexture = new Texture(assetsHostUrl + "/assets/textures/starfield_panorama_texture.jpg", scene, false, false);
+                                        if(_this.starfieldTextureBlock) {
+                                            (_this.starfieldTextureBlock as TextureBlock).texture = starfieldTexture;
+                                        }
                                         Assets.loadingComplete = true;
                                         whenLoadingComplete(this);
                                         console.log("Complete asset loading done");
