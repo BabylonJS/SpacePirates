@@ -306,7 +306,7 @@ class AudioAssets {
                 volume: 1
             })];
 
-        this.thrusterSound = new Sound("thruster", "https://darraghjburke.github.io/MyAssets/thrusterFire_000.ogg", scene, this.soundReady, {
+        this.thrusterSound = new Sound("thruster", assetsHostUrl + "/assets/sounds/heroShip/thrusterFire_000.ogg", scene, this.soundReady, {
             autoplay: true,
             loop: true,
             volume: 0
