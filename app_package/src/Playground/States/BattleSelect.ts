@@ -43,13 +43,19 @@ export class BattleSelect extends State {
         instructions.addControl(inputControls, 1, 0);
 
         if (InputManager.isTouch) {
-
+            GuiFramework.createParameter(inputControls, "Steer", GuiFramework.createStatText("Virtual Thumbstick"));
+            GuiFramework.createParameter(inputControls, "Fire Cannons", GuiFramework.createStatText("Fire Button"));
+            GuiFramework.createParameter(inputControls, "Fire Missile", GuiFramework.createStatText("Missile Button"));
+            GuiFramework.createParameter(inputControls, "Afterburners", GuiFramework.createStatText("Boost Button"));
+            GuiFramework.createParameter(inputControls, "Brake", GuiFramework.createStatText("Brake Button"));
+            GuiFramework.createParameter(inputControls, "Reverse Course", GuiFramework.createStatText("Flip Button"));
         } else {
             GuiFramework.createParameter(inputControls, "Steer", GuiFramework.createStatText("Mouse"));
             GuiFramework.createParameter(inputControls, "Fire Cannons", GuiFramework.createStatText("Left Mouse Button"));
             GuiFramework.createParameter(inputControls, "Fire Missile", GuiFramework.createStatText("Right Mouse Button"));
             GuiFramework.createParameter(inputControls, "Afterburners", GuiFramework.createStatText("W"));
             GuiFramework.createParameter(inputControls, "Brake", GuiFramework.createStatText("S"));
+            GuiFramework.createParameter(inputControls, "Reverse Course", GuiFramework.createStatText("Q"));
         }
         
         Assets.missions.forEach((scenario: any) => {
