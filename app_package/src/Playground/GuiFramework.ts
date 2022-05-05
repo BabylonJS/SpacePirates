@@ -351,7 +351,11 @@ export class GuiFramework {
         button.height = "100px";
         button.color = "#a6fffa";
         button.thickness = 0;
-        button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        if (this.isLandscape) {
+            button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        } else {
+            button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        }
         this.setFont(button, true, false);
         button.onPointerEnterObservable.add(() => {
             image.topInPixels = -100;
