@@ -3,6 +3,7 @@ import "@babylonjs/loaders/glTF";
 import { CreatePlaygroundScene } from "./Playground/playground";
 import { Main } from "./Playground/States/Main";
 import { Parameters } from "./Playground/Parameters";
+import { GuiFramework } from "./Playground/GuiFramework";
 
 export const useWebGPU = false;
 export var useNative = false;
@@ -91,6 +92,7 @@ export async function initializeBabylonApp(options: InitializeBabylonAppOptions)
     (window as any).engine = engine;
 
     const scene = CreatePlaygroundScene(engine, options.assetsHostUrl!, canvas);
+    GuiFramework.updateScreenRatio(engine);
     engine.runRenderLoop(() => {
         scene.render();
     });
@@ -98,6 +100,7 @@ export async function initializeBabylonApp(options: InitializeBabylonAppOptions)
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         engine.resize();
+        GuiFramework.updateScreenRatio(engine);
     });
 }
 
