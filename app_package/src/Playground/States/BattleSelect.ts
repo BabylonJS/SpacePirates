@@ -78,6 +78,5 @@ export class BattleSelect extends State {
         });
 
         this._adt.addControl(grid);
-        GuiFramework.setOrientation(this._adt);
     }
 }

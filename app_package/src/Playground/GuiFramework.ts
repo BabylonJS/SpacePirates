@@ -67,18 +67,18 @@ export class GuiFramework {
         adt.addControl(grid);  
         
         // add in portrait warning... to do add portrait mode UI
-        let portraitWarning = new TextBlock ("portraitWarning", "Please play this game in landscape mode".toUpperCase());
-        this.setFont(portraitWarning, true, true);
-        portraitWarning.fontSize = "40px";
-        portraitWarning.color = "white";
-        portraitWarning.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        portraitWarning.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        portraitWarning.width = 1.0;
-        portraitWarning.height = 1.0;
-        portraitWarning.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        portraitWarning.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        portraitWarning.alpha = 0;
-        adt.addControl(portraitWarning);
+        // let portraitWarning = new TextBlock ("portraitWarning", "Please play this game in landscape mode".toUpperCase());
+        // this.setFont(portraitWarning, true, true);
+        // portraitWarning.fontSize = "40px";
+        // portraitWarning.color = "white";
+        // portraitWarning.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        // portraitWarning.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        // portraitWarning.width = 1.0;
+        // portraitWarning.height = 1.0;
+        // portraitWarning.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        // portraitWarning.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        // portraitWarning.alpha = 0;
+        // adt.addControl(portraitWarning);
     }
 
     public static createTextPanel(parentGrid: Grid) {

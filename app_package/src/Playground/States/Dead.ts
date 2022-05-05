@@ -67,6 +67,5 @@ export class Dead extends State {
         });
 
         this._adt.addControl(grid);
-        GuiFramework.setOrientation(this._adt);
     }
 }
