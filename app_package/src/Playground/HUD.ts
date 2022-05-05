@@ -24,12 +24,12 @@ class HUDPanel {
     private _targetLock: Image;
     private _divisor: number;
     private _index: number;
-    private _fpsCounter: TextBlock;
+    //private _fpsCounter: TextBlock;
     constructor(assets: Assets, adt: AdvancedDynamicTexture, divisor: number, index: number) {
         this._divisor = divisor;
         this._index = index;
 
-        this._fpsCounter = new TextBlock();
+        /*this._fpsCounter = new TextBlock();
         this._fpsCounter.text= "00000000";
         this._fpsCounter.width = 0.2;
         this._fpsCounter.height = "40px";
@@ -39,7 +39,7 @@ class HUDPanel {
         this._fpsCounter.top = "0px";
         this._fpsCounter.left = "0px";
         adt.addControl(this._fpsCounter);
-
+*/
         for(let i = 0; i < 20; i++) {
             var image = new Image("img", assets.assetsHostUrl+"/assets/UI/trackerIcon.svg");
             image.height = "32px";
@@ -210,7 +210,7 @@ class HUDPanel {
             this._targetLock.isVisible = false;
        }
 
-       this._fpsCounter.text = engine.getFps().toFixed() + " fps";
+       //this._fpsCounter.text = engine.getFps().toFixed() + " fps";
     }
 
     public setAlpha(alpha: number):void {
@@ -223,7 +223,7 @@ class HUDPanel {
             image.alpha = alpha * 0.4;
         });
         this._targetLock.alpha = alpha * 0.4;
-        this._fpsCounter.alpha = alpha;
+        //this._fpsCounter.alpha = alpha;
     }
 
     
