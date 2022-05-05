@@ -92,9 +92,7 @@ export async function initializeBabylonApp(options: InitializeBabylonAppOptions)
     (window as any).engine = engine;
 
     const scene = CreatePlaygroundScene(engine, options.assetsHostUrl!, canvas);
-    GuiFramework.screenWidth = engine.getRenderWidth(true);
-    GuiFramework.screenHeight = engine.getRenderHeight(true);
-    GuiFramework.screenRatio = GuiFramework.screenWidth / GuiFramework.screenHeight;
+    GuiFramework.updateScreenRatio(engine);
     engine.runRenderLoop(() => {
         scene.render();
     });

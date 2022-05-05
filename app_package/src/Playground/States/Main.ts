@@ -1,5 +1,5 @@
 import { Nullable } from "@babylonjs/core";
-import { Control, Grid, StackPanel, Button } from "@babylonjs/gui";
+import { Control, Grid, StackPanel, Button, Image } from "@babylonjs/gui";
 import { GameDefinition } from "../Game";
 import { Parameters } from "../Parameters";
 import { BattleSelect } from "./BattleSelect";
@@ -35,6 +35,13 @@ export class Main extends State {
             grid.paddingLeft = "100px";
             GuiFramework.formatButtonGrid(grid);
             grid.addControl(panel, 0, 0);
+
+            let logo = new Image("spacePirates", "assets/UI/spacePiratesLogo.svg");
+            logo.width = 0.7;
+            logo.fixedRatio = 340 / 1040;
+            logo.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP
+            logo.top = "100px";
+            grid.addControl(logo, 0, 1);
 
             Main.playButton = GuiFramework.addButton("Play", panel);
             Main.playButton.isVisible = Assets.loadingComplete;
@@ -82,6 +89,13 @@ export class Main extends State {
             var panel = new StackPanel();
             panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
             panel.paddingBottom = "100px";
+
+            let logo = new Image("spacePirates", "assets/UI/spacePiratesLogo.svg");
+            logo.width = 0.8;
+            logo.fixedRatio = 340 / 1040;
+            logo.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP
+            logo.top = "150px";
+            this._adt.addControl(logo);
 
             Main.playButton = GuiFramework.addButton("Play", panel);
             Main.playButton.isVisible = Assets.loadingComplete;
