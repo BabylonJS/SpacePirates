@@ -77,5 +77,6 @@ export class Main extends State {
             State.setCurrent(States.credits);
         });
         this._adt.addControl(grid);
+        GuiFramework.setOrientation(this._adt);
     }
 }

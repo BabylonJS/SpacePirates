@@ -9,6 +9,45 @@ export class GuiFramework {
         style: "normal"
     }
 
+    public static isLandscape : boolean;
+    public static screenWidth : number;
+    public static screenHeight : number;
+    public static screenRatio : number;
+    public static ratioBreakPoint : number = 1.4;
+    public static currentAdt : AdvancedDynamicTexture;
+
+    public static updateGuiBasedOnOrientation(adt: AdvancedDynamicTexture) {
+        let controls: any = adt.getDescendants(false);
+        if (this.isLandscape === false) {
+            for (let index in controls) {
+                controls[index].alpha = 0
+                controls[index].isEnabled = false;
+            }
+            let warning = adt.getControlByName("portraitWarning");
+            if (warning) warning.alpha = 1.0;
+        } else {
+            for (let index in controls) {
+                controls[index].alpha = 1
+                controls[index].isEnabled = true;
+            }
+            let warning = adt.getControlByName("portraitWarning");
+            if (warning) warning.alpha = 0.0;
+        }
+    }
+
+    public static setOrientation(adt?: AdvancedDynamicTexture) {
+        if (adt !== undefined) this.currentAdt = adt;
+        this.isLandscape = (this.screenRatio > 1.4) ? true : false;
+        if (this.currentAdt !== undefined) this.updateGuiBasedOnOrientation(this.currentAdt);
+    };
+
+    public static updateScreenRatio(engine: Engine) {
+        this.screenWidth = engine.getRenderWidth(true);
+        this.screenHeight = engine.getRenderHeight(true);
+        this.screenRatio = this.screenWidth/this.screenHeight;
+        this.setOrientation()
+    }
+
     public static createBottomBar(adt: AdvancedDynamicTexture) {
         let bottomBarLeft: Image = new Image("bottomBarLeft", "/assets/UI/bottomBarLeft.svg");
         let bottomBarCenter: Image = new Image("bottomBarCenter", "/assets/UI/bottomBarCenter.svg");
@@ -25,7 +64,21 @@ export class GuiFramework {
         grid.addControl(bottomBarLeft, 0, 0);
         grid.addControl(bottomBarCenter, 0, 1);
         grid.addControl(bottomBarRight, 0, 2);
-        adt.addControl(grid);
+        adt.addControl(grid);  
+        
+        // add in portrait warning... to do add portrait mode UI
+        let portraitWarning = new TextBlock ("portraitWarning", "Please play this game in landscape mode".toUpperCase());
+        this.setFont(portraitWarning, true, true);
+        portraitWarning.fontSize = "40px";
+        portraitWarning.color = "white";
+        portraitWarning.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        portraitWarning.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        portraitWarning.width = 1.0;
+        portraitWarning.height = 1.0;
+        portraitWarning.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        portraitWarning.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        portraitWarning.alpha = 0;
+        adt.addControl(portraitWarning);
     }
 
     public static createTextPanel(parentGrid: Grid) {

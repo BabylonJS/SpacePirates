@@ -67,5 +67,6 @@ export class Victory extends State {
         });
 
         this._adt.addControl(grid);
+        GuiFramework.setOrientation(this._adt);
     }
 }
