@@ -1,4 +1,4 @@
-import { Nullable, KeyboardInfo, Observer, Scene, KeyboardEventTypes, VirtualJoystick } from "@babylonjs/core";
+import { Nullable, KeyboardInfo, Observer, Scene, KeyboardEventTypes, VirtualJoystick, Tools } from "@babylonjs/core";
 import { Agent } from "../Agent";
 import { State } from "../States/State";
 import { States } from "../States/States";
@@ -116,19 +116,20 @@ export class InputManager {
 
     static changeCallback(e: any)
     {
+        const pointerEventType = Tools.IsSafari() ? "mouse" : "pointer";
         if (document.pointerLockElement === InputManager._canvas ||
             document.mozPointerLockElement === InputManager._canvas ||
             document.webkitPointerLockElement === InputManager._canvas
         ){
             // we've got a pointerlock for our element, add a mouselistener
-            document.addEventListener("mousemove", InputManager.mouseMove, false);
-            document.addEventListener("mousedown", InputManager.mouseMove, false);
-            document.addEventListener("mouseup", InputManager.mouseMove, false);
+            document.addEventListener(`${pointerEventType}move`, InputManager.mouseMove, false);
+            document.addEventListener(`${pointerEventType}down`, InputManager.mouseMove, false);
+            document.addEventListener(`${pointerEventType}up`, InputManager.mouseMove, false);
         } else {
             // pointer lock is no longer active, remove the callback
-            document.removeEventListener("mousemove", InputManager.mouseMove, false);
-            document.removeEventListener("mousedown", InputManager.mouseMove, false);
-            document.removeEventListener("mouseup", InputManager.mouseMove, false);
+            document.removeEventListener(`${pointerEventType}move`, InputManager.mouseMove, false);
+            document.removeEventListener(`${pointerEventType}down`, InputManager.mouseMove, false);
+            document.removeEventListener(`${pointerEventType}up`, InputManager.mouseMove, false);
 
             State.setCurrent(States.inGameMenu);
         }
