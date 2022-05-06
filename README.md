@@ -5,6 +5,10 @@
 This is the repository for the Space Pirates game demo for Babylon.js 5.0 Release.
 It contains assets and code so you can clone, learn and do modifications.
 
+# Playtest the demo
+
+https://spacepirates.babylonjs.com/
+
 # How to build and test ?
 
 In root folder:
