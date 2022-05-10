@@ -52,6 +52,7 @@ export async function initializeBabylonApp(options: InitializeBabylonAppOptions)
         canvas.style.width = "100%";
         canvas.style.height = "100%";
         canvas.style.display = "block";
+        canvas.oncontextmenu = () => false;
         div.appendChild(canvas);
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
